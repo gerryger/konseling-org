@@ -88,7 +88,7 @@
   --color-on-error-container: var(--color-on-error-container);
 
   /* Typography */
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-manrope), sans-serif;
 
   /* Font Sizes */
   --font-size-headline-xl: 40px;
