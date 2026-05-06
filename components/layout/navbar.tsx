@@ -1,71 +1,51 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect } from "react"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Phone } from "lucide-react"
 
 const navLinks = [
-  { label: "Check-in", href: "/check-in" },
-  { label: "Crisis Help", href: "/crisis" },
-  { label: "Psikolog", href: "/psikolog" },
-  { label: "Sumber Daya", href: "#sumber-daya" },
+  { label: "Check-in", href: "/check-in", active: true },
+  { label: "Crisis Help", href: "/crisis", active: false },
+  { label: "Psychologists", href: "/psikolog", active: false },
+  { label: "Resources", href: "#sumber-daya", active: false },
 ]
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    window.addEventListener("scroll", onScroll)
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [])
-
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-white/90 backdrop-blur-md shadow-nav"
-          : "bg-surface"
-      )}
-    >
-      <nav className="container flex items-center justify-between h-16">
+    <header className="fixed top-0 w-full z-50 shadow-sm bg-surface">
+      <nav className="flex justify-between items-center px-12 py-4 max-w-[1200px] mx-auto">
         <Link
           href="/"
-          className="text-xl font-extrabold text-primary tracking-tight"
+          className="font-extrabold text-2xl text-primary tracking-tight"
         >
-          Konseling.org
+          konseling.org
         </Link>
 
-        <ul className="hidden md:flex items-center gap-8">
-          {navLinks.map(({ label, href }) => (
-            <li key={label}>
-              <Link
-                href={href}
-                className="text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors"
-              >
-                {label}
-              </Link>
-            </li>
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map(({ label, href, active }) => (
+            <Link
+              key={label}
+              href={href}
+              className={
+                active
+                  ? "text-primary border-b-2 border-primary font-bold pb-1 text-sm tracking-wide hover:text-primary transition-colors duration-200"
+                  : "text-on-surface-variant font-medium text-sm tracking-wide hover:text-primary transition-colors duration-200"
+              }
+            >
+              {label}
+            </Link>
           ))}
-        </ul>
+        </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Button
-            variant="ghost"
-            size="sm"
-            className="text-sm font-semibold text-on-surface-variant"
+            variant="outline"
+            className="hidden lg:flex rounded-full border-primary text-primary hover:bg-primary-fixed px-6"
           >
-            Akun Saya
+            My Account
           </Button>
-          <Button
-            size="sm"
-            className="rounded-full bg-error-container text-on-error-container hover:bg-error-container/80 font-semibold text-sm px-4"
-          >
-            <Phone className="w-3.5 h-3.5 mr-1.5" aria-hidden="true" />
-            Darurat
+          <Button className="rounded-full bg-primary text-on-primary hover:bg-primary/90 shadow-md px-6">
+            Emergency Call
           </Button>
         </div>
       </nav>

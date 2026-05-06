@@ -1,59 +1,58 @@
 import Link from "next/link"
-import { ShieldCheck, ArrowRight } from "lucide-react"
+import { CheckCircle, ArrowRight } from "lucide-react"
 
-interface SafetyPoint {
-  title: string
-  description: string
-}
-
-const safetyPoints: SafetyPoint[] = [
-  {
-    title: "Anonimitas Terjaga",
-    description: "Tidak ada data identitas yang diperlukan untuk memulai",
-  },
-  {
-    title: "Filter Krisis AI",
-    description: "Sistem deteksi otomatis untuk melindungi pengguna berisiko tinggi",
-  },
-  {
-    title: "Enkripsi End-to-End",
-    description: "Semua percakapan dilindungi dengan enkripsi TLS 1.3",
-  },
+const safetyPoints = [
+  "Anonimitas terjamin untuk setiap sesi refleksi.",
+  "Filter krisis otomatis untuk deteksi risiko dini.",
+  "Data terenkripsi dengan standar medis internasional.",
 ]
 
 export function SafetySection() {
   return (
-    <section className="py-section bg-secondary-fixed">
-      <div className="container">
-        <div className="max-w-2xl mx-auto text-center space-y-10">
-          <blockquote className="text-headline-md italic text-on-surface leading-[1.4]">
-            &ldquo;Kenyamanan Anda adalah prioritas utama kami dalam setiap interaksi.&rdquo;
-          </blockquote>
-
-          <div className="space-y-4 text-left max-w-md mx-auto">
-            {safetyPoints.map(({ title, description }) => (
-              <div key={title} className="flex gap-3">
-                <ShieldCheck
-                  className="w-5 h-5 text-secondary shrink-0 mt-0.5"
-                  aria-hidden="true"
-                />
-                <div>
-                  <p className="font-semibold text-on-surface text-sm">{title}</p>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">
-                    {description}
-                  </p>
-                </div>
-              </div>
-            ))}
+    <section className="py-20 px-12 bg-surface-low">
+      <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center gap-16">
+        {/* Image side */}
+        <div className="lg:w-1/2 order-2 lg:order-1">
+          <div className="relative">
+            <div className="rounded-3xl overflow-hidden shadow-xl bg-gradient-to-br from-primary-fixed to-secondary-fixed aspect-square flex items-center justify-center">
+              <p className="text-on-surface-variant text-sm font-medium">
+                Illustration — Safety Principle
+              </p>
+            </div>
+            <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] max-w-[240px] border border-surface-variant">
+              <p className="text-sm font-medium text-primary">
+                &ldquo;Kenyamanan Anda adalah prioritas utama kami dalam setiap interaksi.&rdquo;
+              </p>
+            </div>
           </div>
+        </div>
 
-          <Link
-            href="#"
-            className="inline-flex items-center gap-2 text-secondary font-semibold text-sm hover:underline"
-          >
-            Baca Selengkapnya
-            <ArrowRight className="w-4 h-4" aria-hidden="true" />
-          </Link>
+        {/* Text side */}
+        <div className="lg:w-1/2 order-1 lg:order-2 space-y-6">
+          <h2 className="text-[32px] leading-[1.3] font-bold">
+            Prinsip &lsquo;Safety over Conversation&rsquo;
+          </h2>
+          <p className="text-lg leading-relaxed text-on-surface-variant">
+            Kami percaya bahwa percakapan yang bermakna hanya dapat terjadi dalam lingkungan yang aman.
+            Kami menempatkan protokol keamanan dan privasi di atas segalanya.
+          </p>
+          <ul className="space-y-4">
+            {safetyPoints.map((point) => (
+              <li key={point} className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+                <span className="font-medium">{point}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="pt-4">
+            <Link
+              href="#"
+              className="inline-flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all"
+            >
+              Baca Selengkapnya tentang Privasi
+              <ArrowRight className="w-5 h-5" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

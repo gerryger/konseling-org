@@ -1,55 +1,56 @@
 import { TrendingUp, BarChart2 } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
-
-interface ProblemCard {
-  icon: LucideIcon
-  stat: string
-  title: string
-  description: string
-}
-
-const problems: ProblemCard[] = [
-  {
-    icon: TrendingUp,
-    stat: "19.9 Juta",
-    title: "Orang Dengan Gangguan Mental",
-    description:
-      "Berdasarkan data Kemenkes 2023, hampir 20 juta penduduk Indonesia mengalami gangguan mental serius, namun lebih dari 90% tidak mendapatkan penanganan yang tepat.",
-  },
-  {
-    icon: BarChart2,
-    stat: "1 : 300.000",
-    title: "Rasio Psikolog vs Penduduk",
-    description:
-      "Indonesia hanya memiliki sekitar 3.500 psikolog klinis untuk populasi 270 juta jiwa — jauh di bawah standar WHO yang merekomendasikan 1 psikolog per 30.000 penduduk.",
-  },
-]
 
 export function ProblemSection() {
   return (
-    <section className="py-section bg-surface">
-      <div className="container">
-        <h2 className="text-headline-lg text-on-surface mb-12 text-center">
-          Mengapa Pendampingan Itu Penting?
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {problems.map(({ icon: Icon, stat, title, description }) => (
-            <div
-              key={title}
-              className="rounded-xl bg-surface-container p-6 flex gap-4"
-            >
-              <div className="shrink-0 w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center">
-                <Icon className="w-6 h-6 text-primary-container" aria-hidden="true" />
+    <section className="py-20 px-12 bg-surface">
+      <div className="max-w-[1200px] mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-[32px] leading-[1.3] font-bold mb-4">
+            Mengapa Pendampingan Itu Penting?
+          </h2>
+          <p className="text-on-surface-variant max-w-[720px] mx-auto text-base leading-relaxed">
+            Kondisi kesehatan mental di Indonesia memerlukan perhatian serius dan tindakan yang terukur.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Card 1: Scale */}
+          <div className="bg-surface-lowest p-8 rounded-3xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-surface-container-high flex flex-col gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-error-container flex items-center justify-center text-error">
+                <TrendingUp className="w-6 h-6" aria-hidden="true" />
               </div>
-              <div className="space-y-2">
-                <p className="text-2xl font-bold text-primary">{stat}</p>
-                <p className="text-base font-bold text-on-surface">{title}</p>
-                <p className="text-sm text-on-surface-variant leading-relaxed">
-                  {description}
-                </p>
-              </div>
+              <h3 className="text-2xl font-bold">Skala Masalah</h3>
             </div>
-          ))}
+            <div className="rounded-xl w-full aspect-video bg-gradient-to-br from-primary-fixed/40 to-error-container/40 flex items-center justify-center">
+              <p className="text-on-surface-variant text-sm font-medium text-center px-4">
+                Data visualization — 54 juta penduduk Indonesia
+              </p>
+            </div>
+            <p className="text-on-surface-variant text-base leading-relaxed">
+              Lebih dari 54 juta masyarakat Indonesia saat ini sedang berjuang dengan masalah emosional
+              yang memerlukan penanganan khusus.
+            </p>
+          </div>
+
+          {/* Card 2: Gap */}
+          <div className="bg-surface-lowest p-8 rounded-3xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-surface-container-high flex flex-col gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+                <BarChart2 className="w-6 h-6" aria-hidden="true" />
+              </div>
+              <h3 className="text-2xl font-bold">Kesenjangan Layanan</h3>
+            </div>
+            <div className="rounded-xl w-full aspect-video bg-gradient-to-br from-secondary-fixed/40 to-primary-fixed/40 flex items-center justify-center">
+              <p className="text-on-surface-variant text-sm font-medium text-center px-4">
+                Infographic — Gap antara kebutuhan dan aksesibilitas
+              </p>
+            </div>
+            <p className="text-on-surface-variant text-base leading-relaxed">
+              Terdapat kesenjangan yang lebar antara kebutuhan layanan kesehatan mental dengan
+              kenyataan aksesibilitas profesional saat ini.
+            </p>
+          </div>
         </div>
       </div>
     </section>

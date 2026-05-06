@@ -1,93 +1,42 @@
 import Link from "next/link"
-import { Globe, Mail, Phone } from "lucide-react"
+import { Globe, Mail } from "lucide-react"
 
-const serviceLinks = [
-  { label: "Check-in Perasaan", href: "/check-in" },
-  { label: "Crisis Help", href: "/crisis" },
-  { label: "Direktori Psikolog", href: "/psikolog" },
-  { label: "Sumber Daya", href: "#sumber-daya" },
+const footerLinks = [
+  { label: "Privacy Policy", href: "#" },
+  { label: "Terms of Service", href: "#" },
+  { label: "Crisis Resources", href: "#" },
+  { label: "Contact Us", href: "#" },
 ]
-
-const legalLinks = [
-  { label: "Privasi", href: "#" },
-  { label: "Ketentuan", href: "#" },
-  { label: "Sumber Krisis", href: "#" },
-]
-
-const bottomLinks = ["Kebijakan Privasi", "Syarat & Ketentuan", "Kontak"]
 
 export function Footer() {
   return (
-    <footer className="bg-inverse-surface text-inverse-on-surface py-16">
-      <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          <div>
-            <p className="text-xl font-extrabold text-white mb-3">Konseling.org</p>
-            <p className="text-sm text-outline leading-relaxed">
-              Pendampingan setia dalam setiap langkah perjalanan kesehatan mental Anda.
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-widest mb-4">
-              Layanan
-            </p>
-            <ul className="space-y-2">
-              {serviceLinks.map(({ label, href }) => (
-                <li key={label}>
-                  <Link
-                    href={href}
-                    className="text-sm text-outline-variant hover:text-white transition-colors"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-widest mb-4">
-              Legal
-            </p>
-            <ul className="space-y-2">
-              {legalLinks.map(({ label, href }) => (
-                <li key={label}>
-                  <Link
-                    href={href}
-                    className="text-sm text-outline-variant hover:text-white transition-colors"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-outline uppercase tracking-widest mb-4">
-              Kontak
-            </p>
-            <div className="flex items-center gap-4">
-              <Globe className="w-5 h-5 text-outline hover:text-white cursor-pointer transition-colors" aria-label="Website" />
-              <Mail className="w-5 h-5 text-outline hover:text-white cursor-pointer transition-colors" aria-label="Email" />
-              <Phone className="w-5 h-5 text-outline hover:text-white cursor-pointer transition-colors" aria-label="Telepon" />
-            </div>
-          </div>
+    <footer className="w-full mt-20 bg-surface-container">
+      <div className="flex flex-col md:flex-row justify-between items-center px-12 py-12 gap-6 w-full max-w-[1200px] mx-auto">
+        <div className="space-y-4 text-center md:text-left">
+          <div className="text-2xl font-bold text-primary">konseling.org</div>
+          <p className="text-base text-on-surface-variant max-w-[400px]">
+            © 2026 konseling.org — Companion for your mental well-being.
+          </p>
         </div>
 
-        <div className="border-t border-surface-dim/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-outline">© 2026 Konseling.org. Hak cipta dilindungi.</p>
-          <div className="flex gap-6">
-            {bottomLinks.map((item) => (
-              <Link
-                key={item}
-                href="#"
-                className="text-xs text-outline hover:text-white transition-colors"
-              >
-                {item}
-              </Link>
-            ))}
+        <div className="flex flex-wrap justify-center gap-8">
+          {footerLinks.map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
+              className="text-sm font-semibold tracking-wide text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100"
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex gap-4">
+          <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant cursor-pointer hover:bg-primary-fixed transition-all">
+            <Globe className="w-5 h-5" aria-label="Website" />
+          </div>
+          <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant cursor-pointer hover:bg-primary-fixed transition-all">
+            <Mail className="w-5 h-5" aria-label="Email" />
           </div>
         </div>
       </div>

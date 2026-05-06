@@ -1,64 +1,76 @@
 interface Step {
-  number: number
+  number: string
   name: string
   description: string
+  colorClass: string
 }
 
 const steps: Step[] = [
   {
-    number: 1,
+    number: "01",
     name: "Check-in",
-    description: "Ekspresikan perasaan Anda melalui panduan AI yang empatik",
+    description: "Identifikasi perasaan Anda saat ini.",
+    colorClass: "border-primary text-primary",
   },
   {
-    number: 2,
+    number: "02",
     name: "Refleksi",
-    description: "Dapatkan wawasan dan pola dari jurnal emosi Anda",
+    description: "Pahami pemicu emosional Anda.",
+    colorClass: "border-secondary text-secondary",
   },
   {
-    number: 3,
+    number: "03",
     name: "Edukasi",
-    description: "Akses pustaka artikel kesehatan mental terkurasi",
+    description: "Pelajari strategi koping yang tepat.",
+    colorClass: "border-tertiary text-tertiary",
   },
   {
-    number: 4,
+    number: "04",
     name: "Intervensi",
-    description: "Sistem deteksi krisis yang otomatis memberikan bantuan segera",
+    description: "Langkah nyata untuk perubahan.",
+    colorClass: "border-primary-container text-primary-container",
   },
   {
-    number: 5,
+    number: "05",
     name: "Konseling",
-    description: "Terhubung dengan psikolog profesional yang tepat untuk Anda",
+    description: "Pendampingan ahli berkelanjutan.",
+    colorClass: "border-secondary-container text-secondary-container",
   },
 ]
 
 export function ProcessSection() {
   return (
-    <section id="process" className="py-section bg-surface-lowest">
-      <div className="container">
-        <h2 className="text-headline-lg text-on-surface mb-16 text-center">
-          5 Langkah Menuju Pemulihan
-        </h2>
-        <div className="relative">
-          <div
-            className="hidden md:block absolute top-6 left-[10%] right-[10%] h-[2px] bg-gradient-to-r from-primary-container to-secondary-container"
-            aria-hidden="true"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 relative">
-            {steps.map(({ number, name, description }) => (
-              <div key={number} className="flex flex-col items-center text-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-white font-extrabold text-lg z-10 relative">
-                  {number}
-                </div>
-                <div>
-                  <p className="font-bold text-on-surface text-base mb-1">{name}</p>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">
-                    {description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+    <section id="process" className="py-20 px-12">
+      <div className="max-w-[1200px] mx-auto">
+        <div className="mb-16">
+          <h2 className="text-[32px] leading-[1.3] font-bold mb-4">
+            5 Langkah Menuju Pemulihan
+          </h2>
+          <p className="text-on-surface-variant text-base leading-relaxed">
+            Sebuah perjalanan yang dipandu, selangkah demi selangkah, untuk kesejahteraan emosional Anda.
+          </p>
+        </div>
+
+        {/* Journey illustration placeholder */}
+        <div className="relative mb-12 rounded-3xl overflow-hidden shadow-lg bg-gradient-to-r from-primary-fixed via-secondary-fixed to-tertiary-fixed aspect-[16/5] flex items-center justify-center">
+          <p className="text-on-surface-variant text-sm font-medium">
+            Illustration — 5-Step Journey Map
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {steps.map(({ number, name, description, colorClass }) => (
+            <div
+              key={number}
+              className={`p-6 bg-surface-container rounded-2xl border-l-4 ${colorClass.split(" ")[0]}`}
+            >
+              <span className={`font-bold text-sm block mb-2 ${colorClass.split(" ")[1]}`}>
+                {number}
+              </span>
+              <h4 className="font-bold mb-1">{name}</h4>
+              <p className="text-xs text-on-surface-variant">{description}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

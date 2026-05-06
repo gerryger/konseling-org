@@ -39,6 +39,19 @@
   --color-outline: #747687;
   --color-outline-variant: #c4c5d8;
 
+  /* Tertiary Palette */
+  --color-tertiary: #4d5568;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #666d82;
+  --color-on-tertiary-container: #edf0ff;
+  --color-tertiary-fixed: #dbe2fa;
+  --color-tertiary-fixed-dim: #bfc6dd;
+  --color-on-tertiary-fixed: #141b2c;
+  --color-on-tertiary-fixed-variant: #3f4759;
+
+  /* Surface Variant (Stitch alias for surface-container-highest) */
+  --color-surface-variant: #e0e3e5;
+
   /* Error */
   --color-error: #ba1a1a;
   --color-error-container: #ffdad6;
@@ -104,6 +117,16 @@
 
   --color-outline: var(--color-outline);
   --color-outline-variant: var(--color-outline-variant);
+
+  --color-tertiary: var(--color-tertiary);
+  --color-on-tertiary: var(--color-on-tertiary);
+  --color-tertiary-container: var(--color-tertiary-container);
+  --color-on-tertiary-container: var(--color-on-tertiary-container);
+  --color-tertiary-fixed: var(--color-tertiary-fixed);
+  --color-tertiary-fixed-dim: var(--color-tertiary-fixed-dim);
+  --color-on-tertiary-fixed: var(--color-on-tertiary-fixed);
+  --color-on-tertiary-fixed-variant: var(--color-on-tertiary-fixed-variant);
+  --color-surface-variant: var(--color-surface-variant);
 
   --color-error: var(--color-error);
   --color-error-container: var(--color-error-container);
