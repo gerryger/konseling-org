@@ -9,7 +9,17 @@
       "WebFetch(domain:contribution.usercontent.google.com)",
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__query-docs",
-      "Bash(npm add *)"
+      "Bash(npm add *)",
+      "Bash(rtk git *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Read(//c/Users/ggunawan/AppData/Roaming/npm//**)",
+      "Read(//c/Users/ggunawan/AppData/Local/**)",
+      "Read(//c/Users/ggunawan/scoop/shims/**)",
+      "Bash(npm install *)",
+      "Bash(rtk tsc *)",
+      "Bash(rtk next *)",
+      "Bash(curl -sL \"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzBiZDFhOTQ4MjNkMjQ2OTZhNDU0M2EyMGExNzkyODZmEgsSBxCw07fFuxgYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjkwNDQzODM0ODYyMzM5NzE1Ng&filename=&opi=89354086\" -o /c/WORK/konseling-org/docs/stitch-landing.html)"
     ]
   }
 }

@@ -1,60 +1,97 @@
-import Link from "next/link"
-import { CheckCircle, ArrowRight } from "lucide-react"
+import { AlertTriangle, ShieldCheck, ArrowRight, Phone, Users, UserPlus, Lock, Heart, Clock, ShieldAlert } from "lucide-react"
 
-const safetyPoints = [
-  "Anonimitas terjamin untuk setiap sesi refleksi.",
-  "Filter krisis otomatis untuk deteksi risiko dini.",
-  "Data terenkripsi dengan standar medis internasional.",
-]
+const detectItems = ["Niat menyakiti diri sendiri", "Pikiran ingin mengakhiri hidup", "Putus asa & tidak ada harapan", "Pikiran negatif yang intens & berulang"]
+const actionItems = ["Hentikan percakapan biasa", "Tampilkan Crisis Mode dengan pesan dukungan", "Berikan teknik penenangan singkat", "Arahkan ke bantuan terpercaya"]
 
 export function SafetySection() {
   return (
-    <section className="py-20 px-12 bg-surface-low">
-      <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center gap-16">
-        {/* Image side */}
-        <div className="lg:w-1/2 order-2 lg:order-1">
-          <div className="relative">
-            <div className="rounded-3xl overflow-hidden shadow-xl bg-gradient-to-br from-primary-fixed to-secondary-fixed aspect-square flex items-center justify-center">
-              <p className="text-on-surface-variant text-sm font-medium">
-                Illustration — Safety Principle
-              </p>
+    <section className="py-24" id="safety">
+      <div className="max-w-[1200px] mx-auto px-8">
+        <div className="max-w-[720px] mb-12">
+          <span className="k-eyebrow"><span className="dot" />Safety System</span>
+          <h2 className="k-h2 mt-4">
+            Crisis Detection — kami <span className="k-grad-text">langsung bertindak</span> saat ada tanda risiko.
+          </h2>
+          <p className="text-[18px] mt-4 text-(--color-on-surface-variant) leading-[1.65]">
+            Keamanan pengguna adalah prioritas utama. Saat sistem mendeteksi tanda-tanda krisis, percakapan biasa diberhentikan dan kamu diarahkan ke bantuan nyata.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-3.5 items-stretch">
+            <div className="k-flow-card detect">
+              <div className="flex items-center gap-2.5 mb-4">
+                <span className="ic"><AlertTriangle className="w-4 h-4" /></span>
+                <h4 className="text-[14px] font-bold">Tanda yang dideteksi</h4>
+              </div>
+              <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
+                {detectItems.map(t => (
+                  <li key={t} className="flex items-center gap-2.5 text-[13px]">
+                    <span className="li-ic"><AlertTriangle className="w-3 h-3" /></span>{t}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] max-w-[240px] border border-surface-variant">
-              <p className="text-sm font-medium text-primary">
-                &ldquo;Kenyamanan Anda adalah prioritas utama kami dalam setiap interaksi.&rdquo;
-              </p>
+
+            <div className="grid place-items-center text-(--color-primary) sm:rotate-0 rotate-90">
+              <ArrowRight className="w-7 h-7" />
+            </div>
+
+            <div className="k-flow-card action">
+              <div className="flex items-center gap-2.5 mb-4">
+                <span className="ic"><ShieldCheck className="w-4 h-4" /></span>
+                <h4 className="text-[14px] font-bold">Sistem otomatis</h4>
+              </div>
+              <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
+                {actionItems.map(t => (
+                  <li key={t} className="flex items-center gap-2.5 text-[13px]">
+                    <span className="li-ic"><ShieldAlert className="w-3 h-3" /></span>{t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3.5">
+            <div className="text-[13px] font-bold uppercase tracking-[0.06em] text-(--color-on-surface-variant) mb-1">
+              Kami arahkan kamu ke bantuan nyata
+            </div>
+
+            <ResourceCard variant="hotline" icon={<Phone className="w-[22px] h-[22px]" />} title="119 SEJIWA" suffix="· 24 jam" desc="Hotline kesehatan jiwa, Kemenkes RI. Gratis dari seluruh Indonesia." href="tel:119" />
+            <ResourceCard variant="psikolog" icon={<UserPlus className="w-[22px] h-[22px]" />} title="Psikolog terpercaya" desc="Hubungi profesional bersertifikat HIMPSI dengan tarif terjangkau." href="/psikolog" />
+            <ResourceCard variant="terdekat" icon={<Users className="w-[22px] h-[22px]" />} title="Orang terdekat" desc="Bantu kamu menyusun pesan untuk meminta dukungan dari orang yang dipercaya." href="#" />
+
+            <div className="flex gap-2.5 items-center px-[18px] py-3.5 bg-(--color-surface-low) rounded-2xl text-[12px] text-(--color-on-surface-variant)">
+              <Lock className="w-4 h-4 text-(--color-primary)" />
+              Percakapan kamu aman dan rahasia. Kami hanya peduli pada keselamatan kamu.
             </div>
           </div>
         </div>
 
-        {/* Text side */}
-        <div className="lg:w-1/2 order-1 lg:order-2 space-y-6">
-          <h2 className="text-[32px] leading-[1.3] font-bold">
-            Prinsip &lsquo;Safety over Conversation&rsquo;
-          </h2>
-          <p className="text-lg leading-relaxed text-on-surface-variant">
-            Kami percaya bahwa percakapan yang bermakna hanya dapat terjadi dalam lingkungan yang aman.
-            Kami menempatkan protokol keamanan dan privasi di atas segalanya.
-          </p>
-          <ul className="space-y-4">
-            {safetyPoints.map((point) => (
-              <li key={point} className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
-                <span className="font-medium">{point}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="pt-4">
-            <Link
-              href="#"
-              className="inline-flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all"
-            >
-              Baca Selengkapnya tentang Privasi
-              <ArrowRight className="w-5 h-5" aria-hidden="true" />
-            </Link>
+        <div className="k-principle mt-14">
+          <span className="seal" aria-hidden><ShieldCheck className="w-7 h-7" /></span>
+          <div className="lead-text">
+            <h3 className="text-[22px] font-extrabold tracking-[-0.02em]">Prinsip kami: <span className="k-grad-text">Safety over conversation.</span></h3>
+            <p className="text-[13px] mt-1 text-(--color-on-surface-variant) m-0">Kami selalu memilih keselamatan kamu di atas keberlanjutan percakapan.</p>
           </div>
+          <div className="pri"><span className="ic"><Heart className="w-4 h-4" /></span><p className="text-[12px] leading-[1.45] text-(--color-on-surface) m-0">Utamakan keselamatan pengguna di atas segala hal.</p></div>
+          <div className="pri"><span className="ic"><Clock className="w-4 h-4" /></span><p className="text-[12px] leading-[1.45] text-(--color-on-surface) m-0">Bantuan cepat, tepat, dan terpercaya.</p></div>
+          <div className="pri"><span className="ic"><Lock className="w-4 h-4" /></span><p className="text-[12px] leading-[1.45] text-(--color-on-surface) m-0">Privasi &amp; kerahasiaan selalu terjaga.</p></div>
         </div>
       </div>
     </section>
+  )
+}
+
+function ResourceCard({ variant, icon, title, suffix, desc, href }: { variant: "hotline" | "psikolog" | "terdekat"; icon: React.ReactNode; title: string; suffix?: string; desc: string; href: string }) {
+  return (
+    <a href={href} className={`k-resource ${variant}`}>
+      <span className="ic">{icon}</span>
+      <div>
+        <h5 className="text-[15px] font-bold m-0 mb-0.5">{title} {suffix && <span className="text-(--color-on-surface-variant) font-medium text-[12px]">{suffix}</span>}</h5>
+        <p className="text-[12px] text-(--color-on-surface-variant) m-0 mt-0.5">{desc}</p>
+      </div>
+      <ArrowRight className="w-[18px] h-[18px] text-(--color-outline)" />
+    </a>
   )
 }

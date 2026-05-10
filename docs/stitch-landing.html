@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>konseling.org — Companion for your mental well-being</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#1c0062",
+                        "on-secondary-container": "#fffbff",
+                        "surface-tint": "#1a4de7",
+                        "secondary": "#5e3bdb",
+                        "tertiary": "#4d5568",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#bfc6dd",
+                        "secondary-container": "#7858f5",
+                        "on-primary-container": "#f0f0ff",
+                        "on-surface": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary-fixed-variant": "#481bc6",
+                        "on-primary-fixed-variant": "#0036bb",
+                        "on-tertiary-container": "#edf0ff",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#e6deff",
+                        "on-tertiary-fixed": "#141b2c",
+                        "on-background": "#191c1e",
+                        "inverse-primary": "#b8c4ff",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "on-tertiary-fixed-variant": "#3f4759",
+                        "surface-container": "#eceef0",
+                        "outline": "#747687",
+                        "on-primary-fixed": "#001354",
+                        "primary-container": "#335ef7",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#dde1ff",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c4c5d8",
+                        "on-surface-variant": "#434655",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d8dadc",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#dbe2fa",
+                        "primary": "#0042de",
+                        "surface-container-highest": "#e0e3e5",
+                        "secondary-fixed-dim": "#cabeff",
+                        "background": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#666d82"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "80px",
+                        "margin-desktop": "48px",
+                        "gutter": "24px",
+                        "unit": "8px",
+                        "margin-mobile": "16px",
+                        "container-max-width": "1200px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "headline-xl": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "700"}],
+                        "headline-xl": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shadow-custom {
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.04);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #f7f9fb 0%, #dde1ff 100%);
+        }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&amp;display=swap" rel="stylesheet"/></head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 shadow-sm bg-surface dark:bg-background">
+<nav class="flex justify-between items-center px-margin-desktop py-4 max-w-container-max-width mx-auto">
+<div class="font-headline-xl text-primary dark:text-inverse-primary tracking-tight font-[800]" style="font-family: 'Open Sans', sans-serif;">konseling.org</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-primary dark:text-inverse-primary border-b-2 border-primary font-bold pb-1 font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Check-in</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-medium font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Crisis Help</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-medium font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Psychologists</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-medium font-label-md text-label-md hover:text-primary transition-colors duration-200" href="#">Resources</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden lg:block px-6 py-2 rounded-full border border-primary text-primary font-label-md hover:bg-primary-fixed transition-colors scale-95 active:scale-90 duration-200">My Account</button>
+<button class="px-6 py-2 rounded-full bg-primary text-on-primary font-label-md shadow-md scale-95 active:scale-90 transition-transform">Emergency Call</button>
+</div>
+</nav>
+</header>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="hero-gradient py-24 px-margin-desktop">
+<div class="max-w-container-max-width mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-fixed text-on-primary-fixed rounded-full font-label-md">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                    Pendampingan Setia dalam Krisis
+                </div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface">Teman Setia untuk Kesehatan Mental Anda.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-[600px]">
+                    Dapatkan kejernihan mental melalui proses check-in yang tenang, terarah, dan profesional. Kami hadir untuk membantu Anda memahami diri lebih dalam.
+                </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="px-8 py-4 rounded-full bg-primary text-on-primary font-label-md text-lg shadow-lg hover:shadow-xl transition-all scale-100 active:scale-95">Mulai Check-in</button>
+<button class="px-8 py-4 rounded-full bg-surface text-primary border border-outline-variant font-label-md text-lg hover:bg-surface-container transition-all">Pelajari Program</button>
+</div>
+</div>
+<div class="relative">
+<div class="rounded-3xl overflow-hidden shadow-2xl">
+<img alt="Teman Setia Hero Illustration" class="w-full h-auto object-cover" src="../images/landing-page/hero.jpg"/>
+</div>
+</div>
+</div>
+</section>
+<!-- The Crisis Context -->
+<section class="py-section-gap px-margin-desktop bg-surface">
+<div class="max-w-container-max-width mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg mb-4">Mengapa Pendampingan Itu Penting?</h2>
+<p class="text-on-surface-variant max-w-[720px] mx-auto font-body-md">Kondisi kesehatan mental di Indonesia memerlukan perhatian serius dan tindakan yang terukur.</p>
+</div>
+<div class="grid grid-cols-1 gap-gutter">
+<div class="bg-surface-container-lowest p-12 rounded-[40px] shadow-custom border border-surface-container-high flex flex-col gap-8 items-center text-center">
+<div class="flex flex-col items-center gap-4 max-w-3xl">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">query_stats</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Lanskap Kesehatan Mental di Indonesia</h3>
+<p class="text-on-surface-variant font-body-md">Data menunjukkan kesenjangan yang signifikan dalam akses perawatan, menyoroti kebutuhan mendesak akan platform pendampingan yang inklusif.</p>
+</div>
+<img alt="Statistik Kesehatan Mental Indonesia" class="rounded-3xl w-full max-w-5xl" src="../images/landing-page/landscape-mental-health.jpg"/>
+</div>
+</div>
+</div>
+</section>
+<!-- 5-Step Journey -->
+<section class="py-section-gap px-margin-desktop">
+<div class="max-w-container-max-width mx-auto">
+<div class="mb-16 text-center">
+<h2 class="font-headline-lg text-headline-lg mb-4">5 Langkah Menuju Pemulihan</h2>
+<p class="text-on-surface-variant font-body-md">Sebuah perjalanan yang dipandu, selangkah demi selangkah, untuk kesejahteraan emosional Anda.</p>
+</div>
+<div class="relative mb-16 flex justify-center">
+<img alt="5 Langkah Perjalanan Pemulihan" class="w-full max-w-5xl rounded-3xl" src="../images/landing-page/recovery-step.jpg"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+<div class="p-8 bg-surface-container-low rounded-3xl border-b-4 border-primary shadow-sm">
+<span class="text-primary font-bold text-lg block mb-2">01</span>
+<h4 class="font-bold text-lg mb-2">Check-in</h4>
+<p class="text-sm text-on-surface-variant">Identifikasi perasaan Anda saat ini dengan tenang.</p>
+</div>
+<div class="p-8 bg-surface-container-low rounded-3xl border-b-4 border-secondary shadow-sm">
+<span class="text-secondary font-bold text-lg block mb-2">02</span>
+<h4 class="font-bold text-lg mb-2">Refleksi</h4>
+<p class="text-sm text-on-surface-variant">Pahami pemicu emosional melalui introspeksi.</p>
+</div>
+<div class="p-8 bg-surface-container-low rounded-3xl border-b-4 border-tertiary shadow-sm">
+<span class="text-tertiary font-bold text-lg block mb-2">03</span>
+<h4 class="font-bold text-lg mb-2">Edukasi</h4>
+<p class="text-sm text-on-surface-variant">Pelajari strategi koping dari sumber terpercaya.</p>
+</div>
+<div class="p-8 bg-surface-container-low rounded-3xl border-b-4 border-primary-container shadow-sm">
+<span class="text-primary-container font-bold text-lg block mb-2">04</span>
+<h4 class="font-bold text-lg mb-2">Intervensi</h4>
+<p class="text-sm text-on-surface-variant">Ambil langkah nyata untuk perubahan positif.</p>
+</div>
+<div class="p-8 bg-surface-container-low rounded-3xl border-b-4 border-secondary-container shadow-sm">
+<span class="text-secondary-container font-bold text-lg block mb-2">05</span>
+<h4 class="font-bold text-lg mb-2">Konseling</h4>
+<p class="text-sm text-on-surface-variant">Pendampingan ahli untuk pemulihan jangka panjang.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Safety Over Conversation -->
+<section class="py-section-gap px-margin-desktop bg-surface-container-low overflow-hidden">
+<div class="max-w-container-max-width mx-auto flex flex-col lg:flex-row items-center gap-16">
+<div class="lg:w-1/2 order-2 lg:order-1 relative">
+<img alt="Prinsip Keamanan" class="rounded-[40px] shadow-2xl relative z-10" src="../images/landing-page/safety-over-conversation.jpg"/>
+<div class="absolute -bottom-10 -left-10 w-64 h-64 bg-primary opacity-10 rounded-full blur-3xl"></div>
+</div>
+<div class="lg:w-1/2 order-1 lg:order-2 space-y-8">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-md">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                    Keamanan Data &amp; Privasi
+                </div>
+<h2 class="font-headline-lg text-headline-lg leading-tight">Prinsip 'Safety over Conversation'</h2>
+<p class="text-body-lg text-on-surface-variant">
+                    Kami percaya bahwa percakapan yang bermakna hanya dapat terjadi dalam lingkungan yang aman. Kami menempatkan protokol keamanan dan privasi di atas segalanya.
+                </p>
+<div class="grid grid-cols-1 gap-4">
+<div class="flex items-center gap-4 p-4 bg-surface rounded-2xl border border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-3xl">verified</span>
+<span class="font-medium">Anonimitas terjamin untuk setiap sesi refleksi.</span>
+</div>
+<div class="flex items-center gap-4 p-4 bg-surface rounded-2xl border border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-3xl">security</span>
+<span class="font-medium">Filter krisis otomatis untuk deteksi risiko dini.</span>
+</div>
+<div class="flex items-center gap-4 p-4 bg-surface rounded-2xl border border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-3xl">encrypted</span>
+<span class="font-medium">Data terenkripsi dengan standar medis internasional.</span>
+</div>
+</div>
+<div class="pt-4">
+<button class="flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all">
+                        Baca Selengkapnya tentang Privasi
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid: Resources & Features -->
+<section class="py-section-gap px-margin-desktop">
+<div class="max-w-container-max-width mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg">Fitur &amp; Sumber Daya</h2>
+</div>
+<div class="grid grid-cols-1 gap-12">
+<!-- Main Resource Illustration -->
+<div class="bg-surface-container-low rounded-[48px] p-8 md:p-16 flex flex-col items-center gap-12 border border-surface-container-high shadow-sm">
+<img alt="Ilustrasi Sumber Daya Mental Health" class="w-full max-w-4xl" src="../images/landing-page/feature-and-resources.jpg"/>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+<div class="text-center space-y-4 p-6 hover:bg-surface rounded-3xl transition-colors">
+<div class="w-16 h-16 bg-primary-fixed mx-auto rounded-2xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">smart_toy</span>
+</div>
+<h3 class="font-bold text-xl">Chatbot Pendamping 24/7</h3>
+<p class="text-sm text-on-surface-variant">Teman bicara yang selalu ada untuk mendengarkan keluh kesah Anda.</p>
+<button class="text-primary font-bold text-sm hover:underline">Mulai Chat</button>
+</div>
+<div class="text-center space-y-4 p-6 hover:bg-surface rounded-3xl transition-colors">
+<div class="w-16 h-16 bg-secondary-fixed mx-auto rounded-2xl flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-3xl">auto_stories</span>
+</div>
+<h3 class="font-bold text-xl">Perpustakaan Refleksi</h3>
+<p class="text-sm text-on-surface-variant">Ratusan artikel dan panduan terkurasi untuk kesehatan mental Anda.</p>
+<button class="text-primary font-bold text-sm hover:underline">Buka Perpustakaan</button>
+</div>
+<div class="text-center space-y-4 p-6 hover:bg-surface rounded-3xl transition-colors">
+<div class="w-16 h-16 bg-tertiary-fixed mx-auto rounded-2xl flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-3xl">group</span>
+</div>
+<h3 class="font-bold text-xl">Komunitas Aman</h3>
+<p class="text-sm text-on-surface-variant">Berbagi pengalaman di ruang aman dengan mereka yang mengerti.</p>
+<button class="text-primary font-bold text-sm hover:underline">Gabung Komunitas</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-section-gap px-margin-desktop">
+<div class="max-w-container-max-width mx-auto bg-surface-variant rounded-[48px] p-12 md:p-24 text-center space-y-8 relative overflow-hidden">
+<div class="relative z-10">
+<h2 class="font-headline-xl text-headline-xl mb-4">Siap untuk Memulai Langkah Pertama?</h2>
+<p class="text-body-lg text-on-surface-variant max-w-[640px] mx-auto">Bergabunglah dengan ribuan orang lainnya yang telah menemukan kedamaian melalui konseling.org.</p>
+<div class="pt-8">
+<button class="px-12 py-5 bg-primary text-on-primary rounded-full font-headline-md shadow-2xl hover:scale-105 active:scale-95 transition-all">
+                        Mulai Check-in Sekarang
+                    </button>
+</div>
+</div>
+<!-- Abstract decorative shapes -->
+<div class="absolute top-0 left-0 w-64 h-64 bg-primary opacity-5 blur-[100px]"></div>
+<div class="absolute bottom-0 right-0 w-64 h-64 bg-secondary opacity-5 blur-[100px]"></div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-section-gap bg-surface-container dark:bg-surface-container-high">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop py-12 gap-gutter w-full max-w-container-max-width mx-auto">
+<div class="space-y-4 text-center md:text-left">
+<div class="font-headline-md text-primary dark:text-inverse-primary font-[800]" style="font-family: 'Open Sans', sans-serif;">konseling.org</div>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant max-w-[400px]">
+                © 2024 konseling.org — Companion for your mental well-being.
+            </p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Crisis Resources</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Contact Us</a>
+</div>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant cursor-pointer hover:bg-primary-fixed transition-all">
+<span class="material-symbols-outlined text-[20px]">language</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant cursor-pointer hover:bg-primary-fixed transition-all">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- Persistent Crisis FAB -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="flex items-center gap-3 bg-error px-6 py-4 rounded-full text-on-error shadow-2xl hover:bg-red-700 transition-all scale-100 active:scale-95 group">
+<span class="material-symbols-outlined" data-weight="fill">emergency</span>
+<span class="font-bold tracking-wide">Butuh Bantuan Mendesak?</span>
+</button>
+</div>
+</body></html>

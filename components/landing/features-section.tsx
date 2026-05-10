@@ -1,56 +1,60 @@
-import Link from "next/link"
-import { BookOpen, Users } from "lucide-react"
+import { BookOpen, Users, UserPlus, Lock } from "lucide-react"
 
 export function FeaturesSection() {
   return (
-    <section className="py-20 px-12">
-      <div className="max-w-[1200px] mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-[32px] leading-[1.3] font-bold">Fitur &amp; Sumber Daya</h2>
+    <section className="py-24 bg-(--color-surface-low)" id="fitur">
+      <div className="max-w-[1200px] mx-auto px-8">
+        <div className="max-w-[720px] mb-12">
+          <span className="k-eyebrow"><span className="dot" />Fitur &amp; Sumber Daya</span>
+          <h2 className="k-h2 mt-4">
+            Semua yang kamu butuhkan,<br /><span className="k-grad-text">dalam satu tempat yang aman.</span>
+          </h2>
+          <p className="text-[18px] mt-4 text-(--color-on-surface-variant) leading-[1.65]">
+            Dirancang untuk menemanimu di setiap momen — saat butuh ngobrol, saat butuh refleksi, atau saat butuh bantuan profesional.
+          </p>
         </div>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
-          {/* Large card: Chatbot — spans 2 cols × 2 rows */}
-          <div className="md:col-span-2 md:row-span-2 bg-primary-container text-on-primary-container p-10 rounded-[32px] flex flex-col justify-between relative overflow-hidden group">
-            <div className="relative z-10">
-              <h3 className="text-3xl font-bold mb-4">Chatbot Pendamping 24/7</h3>
-              <p className="text-lg opacity-90 max-w-[400px]">
-                Teman bicara yang selalu ada untuk mendengarkan keluh kesah Anda,
-                kapan pun dan di mana pun.
-              </p>
+        <div className="k-bento">
+          <div className="k-bento-card k-bento-hero">
+            <div className="glow" aria-hidden />
+            <span className="tag">Inti dari Konseling.org</span>
+            <h3 className="text-[30px] font-extrabold leading-[1.15] mt-4 max-w-[360px] text-white">
+              AI Pendamping 24/7 — selalu ada untuk mendengar.
+            </h3>
+            <p className="text-white/85 mt-3.5 max-w-[380px] text-[15px] leading-[1.6] m-0">
+              Teman ngobrol yang sabar, empatik, dan tidak menghakimi. Saat semua orang sibuk, kami tetap di sini.
+            </p>
+            <div className="mt-auto pt-7 flex flex-col gap-2">
+              <div className="k-bento-bubble">Halo, gimana harimu hari ini? Cerita aja kalau mau.</div>
+              <div className="k-bento-bubble user">Lagi capek banget rasanya...</div>
+              <div className="k-bento-bubble">Lelah itu sinyal yang valid. Aku dengerin — apa yang paling bikin capek?</div>
             </div>
-            <div className="relative z-10">
-              <Link
-                href="/check-in"
-                className="inline-block bg-white text-primary px-8 py-3 rounded-full font-bold hover:shadow-lg transition-all"
-              >
-                Mulai Percakapan
-              </Link>
-            </div>
-            {/* Decorative background circle */}
-            <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white opacity-10 rounded-full group-hover:scale-110 transition-transform duration-700" />
           </div>
 
-          {/* Small card 1: Reflection Library */}
-          <div className="bg-secondary-fixed p-8 rounded-[32px] flex flex-col gap-4 border border-secondary-container">
-            <BookOpen className="w-10 h-10 text-secondary" aria-hidden="true" />
-            <h4 className="font-bold text-xl">Perpustakaan Refleksi</h4>
-            <p className="text-sm opacity-80">
-              Ratusan artikel dan panduan untuk kesehatan mental Anda.
-            </p>
-          </div>
-
-          {/* Small card 2: Community */}
-          <div className="bg-tertiary-fixed p-8 rounded-[32px] flex flex-col gap-4 border border-tertiary-container">
-            <Users className="w-10 h-10 text-tertiary" aria-hidden="true" />
-            <h4 className="font-bold text-xl">Komunitas Pendukung</h4>
-            <p className="text-sm opacity-80">
-              Berbagi pengalaman dengan mereka yang mengerti posisi Anda.
-            </p>
-          </div>
+          <BentoSmall variant="lib" icon={<BookOpen className="w-[22px] h-[22px]" />} title="Perpustakaan refleksi" desc="Panduan, latihan grounding, dan bacaan singkat untuk menemanimu memahami diri." stats={[{ n: "120+", l: "Artikel" }, { n: "25", l: "Latihan" }]} />
+          <BentoSmall variant="komunitas" icon={<Users className="w-[22px] h-[22px]" />} title="Komunitas pendukung" desc="Berbagi cerita anonim dengan mereka yang mengerti — saling menguatkan, tanpa menghakimi." stats={[{ n: "8.5K", l: "Member" }, { n: "Anonim", l: "By default" }]} />
+          <BentoSmall variant="psikolog" icon={<UserPlus className="w-[22px] h-[22px]" />} title="Direktori psikolog" desc="Cari psikolog bersertifikat HIMPSI berdasarkan keahlian, kota, dan tarif." stats={[{ n: "50+", l: "Mitra psikolog" }, { n: "12", l: "Kota" }]} />
+          <BentoSmall variant="aman" icon={<Lock className="w-[22px] h-[22px]" />} title="Privasi end-to-end" desc="Anonim secara default. Data terenkripsi. Tidak ada percakapan yang dijual atau dipakai untuk iklan." stats={[{ n: "E2E", l: "Encrypted" }, { n: "0", l: "Iklan / tracker" }]} />
         </div>
       </div>
     </section>
+  )
+}
+
+function BentoSmall({ variant, icon, title, desc, stats }: { variant: string; icon: React.ReactNode; title: string; desc: string; stats: { n: string; l: string }[] }) {
+  return (
+    <div className={`k-bento-card ${variant}`}>
+      <span className="ic">{icon}</span>
+      <h3 className="text-[22px] font-bold leading-[1.3]">{title}</h3>
+      <p className="text-[14px] text-(--color-on-surface-variant) leading-[1.55] m-0">{desc}</p>
+      <div className="stats-mini">
+        {stats.map(s => (
+          <div key={s.l} className="flex flex-col gap-0.5">
+            <span className="n">{s.n}</span>
+            <span className="l">{s.l}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

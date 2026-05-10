@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300">
+  <defs>
+    <linearGradient id="journeyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0042de;stop-opacity:0.2" />
+      <stop offset="50%" style="stop-color:#5e3bdb;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#666d82;stop-opacity:0.2" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="300" fill="url(#journeyGradient)"/>
+  <line x1="120" y1="150" x2="1080" y2="150" stroke="#0042de" stroke-width="3" opacity="0.3"/>
+  <circle cx="120" cy="150" r="35" fill="#0042de"/>
+  <text x="120" y="240" font-size="18" font-weight="bold" text-anchor="middle" fill="#0042de" font-family="Manrope">Check-in</text>
+  <circle cx="360" cy="150" r="35" fill="#5e3bdb"/>
+  <text x="360" y="240" font-size="18" font-weight="bold" text-anchor="middle" fill="#5e3bdb" font-family="Manrope">Reflection</text>
+  <circle cx="600" cy="150" r="35" fill="#666d82"/>
+  <text x="600" y="240" font-size="18" font-weight="bold" text-anchor="middle" fill="#666d82" font-family="Manrope">Education</text>
+  <circle cx="840" cy="150" r="35" fill="#335ef7"/>
+  <text x="840" y="240" font-size="18" font-weight="bold" text-anchor="middle" fill="#335ef7" font-family="Manrope">Intervention</text>
+  <circle cx="1080" cy="150" r="35" fill="#7858f5"/>
+  <text x="1080" y="240" font-size="18" font-weight="bold" text-anchor="middle" fill="#7858f5" font-family="Manrope">Counseling</text>
+  <text x="600" y="50" font-size="20" text-anchor="middle" fill="#434655" font-family="Manrope">
+    5-Step Journey to Recovery
+  </text>
+</svg>

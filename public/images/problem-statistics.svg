@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="statsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffdad6;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#335ef7;stop-opacity:0.2" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#statsGradient)"/>
+  <g opacity="0.3">
+    <rect x="100" y="150" width="80" height="250" fill="#ba1a1a"/>
+    <rect x="220" y="100" width="80" height="300" fill="#ba1a1a"/>
+    <rect x="340" y="180" width="80" height="220" fill="#ba1a1a"/>
+    <rect x="460" y="120" width="80" height="280" fill="#ba1a1a"/>
+    <rect x="580" y="200" width="80" height="200" fill="#ba1a1a"/>
+  </g>
+  <text x="400" y="450" font-size="32" font-weight="bold" text-anchor="middle" fill="#ba1a1a" font-family="Manrope">
+    54 Million Indonesians
+  </text>
+  <text x="400" y="490" font-size="16" text-anchor="middle" fill="#434655" font-family="Manrope">
+    Facing Emotional Challenges
+  </text>
+</svg>
