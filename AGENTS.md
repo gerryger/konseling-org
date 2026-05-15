@@ -143,3 +143,9 @@ npm run lint         # ESLint check
 - Verify dark mode (kalau project sudah aktifkan — saat ini optional via `data-theme="dark"` on `<html>`).
 - Verify crisis flow masih intact (untuk perubahan di area chat).
 - Update test snapshots kalau ada.
+
+## AI Agent — system prompt
+- Lives in: `lib/agent/system-prompt.ts`
+- Language: Bahasa Indonesia santai
+- DO NOT rewrite or shorten this prompt without explicit instruction
+- The escalation scripts (risk 40-69 and 70+) are verbatim — preserve exact wording
