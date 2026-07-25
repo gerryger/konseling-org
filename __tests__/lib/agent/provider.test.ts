@@ -1,4 +1,8 @@
+/**
+ * @jest-environment node
+ */
 import { AnthropicProvider } from '../../../lib/agent/provider/anthropic';
+import { GeminiProvider } from '../../../lib/agent/provider/gemini';
 import { createLLMProvider, resolveLLMProviderSelection } from '../../../lib/agent/provider/factory';
 
 describe('LLM provider foundation', () => {
@@ -24,6 +28,17 @@ describe('LLM provider foundation', () => {
     });
   });
 
+  it('ignores other providers\' legacy model vars when resolving the active provider\'s model', () => {
+    const selection = resolveLLMProviderSelection({
+      LLM_PROVIDER: 'gemini',
+      GEMINI_API_KEY: 'gemini-key',
+      ANTHROPIC_MODEL: 'claude-sonnet-5',
+      GEMINI_MODEL: 'gemini-2.5-pro',
+    } as unknown as NodeJS.ProcessEnv);
+
+    expect(selection.model).toBe('gemini-2.5-pro');
+  });
+
   it('creates an anthropic provider with the configured model', () => {
     const provider = createLLMProvider(
       {
@@ -38,6 +53,22 @@ describe('LLM provider foundation', () => {
     expect(provider).toBeInstanceOf(AnthropicProvider);
     expect(provider.name).toBe('anthropic');
     expect(provider.model).toBe('claude-sonnet-5');
+  });
+
+  it('creates a gemini provider with the configured model', () => {
+    const provider = createLLMProvider(
+      {
+        provider: 'gemini',
+        apiKey: 'gemini-key',
+        model: 'gemini-2.5-pro',
+        maxTokens: 512,
+      },
+      {} as NodeJS.ProcessEnv,
+    );
+
+    expect(provider).toBeInstanceOf(GeminiProvider);
+    expect(provider.name).toBe('gemini');
+    expect(provider.model).toBe('gemini-2.5-pro');
   });
 
   it('rejects unsupported provider overrides', () => {

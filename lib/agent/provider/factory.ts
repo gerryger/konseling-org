@@ -1,10 +1,12 @@
 import 'server-only';
 
 import { AnthropicProvider } from './anthropic';
+import { GeminiProvider } from './gemini';
 import type { LLMProvider, LLMProviderName, LLMProviderSelection } from './types';
 
 const DEFAULT_PROVIDER: LLMProviderName = 'anthropic';
 const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-5';
+const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
 
 function normalizeProviderName(value: string | undefined): LLMProviderName {
   const normalized = (value ?? DEFAULT_PROVIDER).trim().toLowerCase();
@@ -33,11 +35,24 @@ function resolveApiKey(provider: LLMProviderName, env: NodeJS.ProcessEnv): strin
   }
 }
 
+function resolveModel(provider: LLMProviderName, env: NodeJS.ProcessEnv): string | undefined {
+  if (env.LLM_MODEL) return env.LLM_MODEL;
+
+  switch (provider) {
+    case 'anthropic':
+      return env.ANTHROPIC_MODEL;
+    case 'openai':
+      return env.OPENAI_MODEL;
+    case 'gemini':
+      return env.GEMINI_MODEL;
+  }
+}
+
 export function resolveLLMProviderSelection(
   env: NodeJS.ProcessEnv = process.env,
 ): LLMProviderSelection {
   const provider = normalizeProviderName(env.LLM_PROVIDER ?? env.AI_PROVIDER);
-  const model = env.LLM_MODEL ?? env.ANTHROPIC_MODEL ?? env.OPENAI_MODEL ?? env.GEMINI_MODEL;
+  const model = resolveModel(provider, env);
   const apiKey = resolveApiKey(provider, env);
   const maxTokens = parseMaxTokens(env.LLM_MAX_TOKENS);
 
@@ -67,8 +82,13 @@ export function createLLMProvider(
         model: selection.model ?? DEFAULT_ANTHROPIC_MODEL,
         maxTokens: selection.maxTokens,
       });
-    case 'openai':
     case 'gemini':
+      return new GeminiProvider({
+        apiKey: selection.apiKey ?? '',
+        model: selection.model ?? DEFAULT_GEMINI_MODEL,
+        maxTokens: selection.maxTokens,
+      });
+    case 'openai':
       throw new Error(`LLM provider "${provider}" is not implemented yet`);
   }
 }
