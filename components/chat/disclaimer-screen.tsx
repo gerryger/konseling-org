@@ -51,14 +51,14 @@ export function DisclaimerScreen({ onAccept }: DisclaimerScreenProps) {
               <span className="ic" aria-hidden="true"><Lock size={16} /></span>
               <div>
                 <h5>Anonim &amp; rahasia</h5>
-                <p>Tidak perlu identitas asli. Percakapan terenkripsi dan tidak digunakan untuk iklan.</p>
+                <p>Tidak perlu identitas asli. Percakapan dijaga sebaik mungkin dan tidak digunakan untuk iklan.</p>
               </div>
             </li>
             <li>
               <span className="ic warn" aria-hidden="true"><AlertTriangle size={16} /></span>
               <div>
                 <h5>Saat ada tanda krisis</h5>
-                <p>Aku akan langsung mengarahkanmu ke 119 SEJIWA dan psikolog terdekat — keselamatanmu yang utama.</p>
+                <p>Aku akan langsung menghentikan obrolan biasa dan mengarahkanmu ke 119 SEJIWA atau psikolog terdekat — keselamatanmu yang utama.</p>
               </div>
             </li>
           </ul>

@@ -17,7 +17,8 @@ export function CrisisBanner({ onContinue }: CrisisBannerProps) {
           <div className="cs-crisis-title">Aku menangkap sinyal yang berat dari ceritamu.</div>
           <p className="cs-crisis-text">
             Apa yang kamu rasakan itu valid — dan kamu tidak harus menghadapinya sendiri.
-            Aku ingin mengarahkanmu ke bantuan yang lebih siap mendengarkan saat ini.
+            Kalau sinyalnya sangat berat, aku akan langsung menghentikan obrolan biasa dan
+            mengarahkanmu ke bantuan yang lebih siap mendengarkan saat ini.
           </p>
         </div>
       </div>
