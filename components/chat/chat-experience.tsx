@@ -1,13 +1,13 @@
 'use client'
 
 import { useReducer, useState, useCallback, useEffect, useRef } from 'react'
-import type { ChatMessage, ChatPhase, Mood } from '@/lib/chat/types'
+import type { ChatMessage, ChatPhase } from '@/lib/chat/types'
 import { detectCrisis } from '@/lib/chat/crisis-detection'
+import { streamChat } from '@/lib/api/chat-client'
 import { Sidebar } from './sidebar'
 import { TopBar } from './top-bar'
 import { Composer } from './composer'
-import { MessageBubble } from './message-bubble'
-import { TypingIndicator } from './typing-indicator'
+import { ChatStream } from './chat-stream'
 import { QuickReplies } from './quick-replies'
 import { MoodScreen } from './mood-screen'
 import { DisclaimerScreen, DISCLAIMER_KEY } from './disclaimer-screen'
@@ -35,13 +35,12 @@ const CRISIS_L3_QUICK_REPLIES = [
   { emoji: '💭', label: 'Cerita lebih dalam' },
 ]
 
-const DUMMY_REPLY = 'Aku dengerin. Ceritain lebih lanjut, ya.'
-const CRISIS_L3_REPLY =
-  'Aku nggak akan langsung kasih solusi. Aku cuma mau bilang: aku dengerin, dan kamu nggak harus melewati ini sendirian.\nKalau kamu mau, kita bisa ngobrol pelan dulu — atau kamu bisa langsung kontak salah satu di atas. Apa pun pilihanmu, aku temenin.'
+const STREAM_ERROR_REPLY = 'Maaf, koneksi ke Kawan lagi bermasalah. Coba kirim pesan itu lagi, ya.'
 
 interface ChatState {
   messages: ChatMessage[]
   isTyping: boolean
+  isStreaming: boolean
   showBanner: boolean
   showTakeover: boolean
   bannerTriggerMsgId?: string
@@ -50,6 +49,8 @@ interface ChatState {
 type Action =
   | { type: 'ADD_MSG'; msg: ChatMessage }
   | { type: 'SET_TYPING'; value: boolean }
+  | { type: 'SET_STREAMING'; value: boolean }
+  | { type: 'APPEND_STREAM_DELTA'; id: string; delta: string }
   | { type: 'SHOW_BANNER'; triggerMsgId: string }
   | { type: 'SHOW_TAKEOVER' }
   | { type: 'DISMISS_TAKEOVER' }
@@ -60,8 +61,19 @@ function reducer(state: ChatState, action: Action): ChatState {
       return { ...state, messages: [...state.messages, action.msg] }
     case 'SET_TYPING':
       return { ...state, isTyping: action.value }
+    case 'SET_STREAMING':
+      return { ...state, isStreaming: action.value }
+    case 'APPEND_STREAM_DELTA':
+      return {
+        ...state,
+        messages: state.messages.map((msg) =>
+          msg.id === action.id ? { ...msg, text: msg.text + action.delta } : msg,
+        ),
+      }
     case 'SHOW_BANNER':
-      return { ...state, showBanner: true, bannerTriggerMsgId: action.triggerMsgId }
+      return state.showBanner || state.showTakeover
+        ? state
+        : { ...state, showBanner: true, bannerTriggerMsgId: action.triggerMsgId }
     case 'SHOW_TAKEOVER':
       return { ...state, showTakeover: true }
     case 'DISMISS_TAKEOVER':
@@ -75,26 +87,35 @@ function genId(): string {
   return Math.random().toString(36).slice(2)
 }
 
+function toApiMessages(messages: ChatMessage[]) {
+  return messages.map((msg) => ({
+    role: (msg.sender === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+    content: msg.text,
+  }))
+}
+
 export function ChatExperience() {
   const [phase, setPhase] = useState<ChatPhase>('mood')
   const [composerValue, setComposerValue] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const scrollAnchorRef = useRef<HTMLDivElement>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const [chatState, dispatch] = useReducer(reducer, {
     messages: [INITIAL_MESSAGE],
     isTyping: false,
+    isStreaming: false,
     showBanner: false,
     showTakeover: false,
     bannerTriggerMsgId: undefined,
   })
 
-  // Auto-scroll on new messages / typing
   useEffect(() => {
-    scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [chatState.messages, chatState.isTyping, chatState.showBanner])
+    return () => {
+      abortControllerRef.current?.abort()
+    }
+  }, [])
 
-  function handleMoodContinue(_mood?: Mood) {
+  function handleMoodContinue() {
     const disclaimerAccepted =
       typeof window !== 'undefined' && localStorage.getItem(DISCLAIMER_KEY) === 'true'
     setPhase(disclaimerAccepted ? 'chat' : 'disclaimer')
@@ -104,42 +125,94 @@ export function ChatExperience() {
     setPhase('chat')
   }
 
-  const handleSend = useCallback((text: string) => {
-    if (!text.trim()) return
+  const streamAssistantReply = useCallback(async (history: ChatMessage[], bannerTriggerId: string) => {
+    const controller = new AbortController()
+    abortControllerRef.current = controller
 
-    const level = detectCrisis(text)
-    const userMsg: ChatMessage = {
-      id: genId(),
-      sender: 'user',
-      text: text.trim(),
-      timestamp: new Date(),
-      crisisLevel: level !== 'none' ? level : undefined,
-    }
-
-    dispatch({ type: 'ADD_MSG', msg: userMsg })
-    setComposerValue('')
-
-    if (level === 'critical') {
-      dispatch({ type: 'SHOW_TAKEOVER' })
-    } else if (level === 'high') {
-      dispatch({ type: 'SHOW_BANNER', triggerMsgId: userMsg.id })
-    }
-
+    dispatch({ type: 'SET_STREAMING', value: true })
     dispatch({ type: 'SET_TYPING', value: true })
-    setTimeout(() => {
+
+    const assistantMsgId = genId()
+    let assistantStarted = false
+
+    try {
+      for await (const event of streamChat(toApiMessages(history), { signal: controller.signal })) {
+        if (event.type === 'text') {
+          if (!assistantStarted) {
+            assistantStarted = true
+            dispatch({ type: 'SET_TYPING', value: false })
+            dispatch({
+              type: 'ADD_MSG',
+              msg: { id: assistantMsgId, sender: 'kawan', text: event.delta, timestamp: new Date() },
+            })
+          } else {
+            dispatch({ type: 'APPEND_STREAM_DELTA', id: assistantMsgId, delta: event.delta })
+          }
+          continue
+        }
+
+        if (event.type === 'risk') {
+          // Server risk events only ever add crisis UI, never remove it —
+          // client-side detection already showed a banner/takeover immediately on send.
+          if (event.risk.level === 'critical') {
+            dispatch({ type: 'SHOW_TAKEOVER' })
+          } else if (event.risk.level === 'high') {
+            dispatch({ type: 'SHOW_BANNER', triggerMsgId: bannerTriggerId })
+          }
+          continue
+        }
+
+        if (event.type === 'error') {
+          dispatch({
+            type: 'ADD_MSG',
+            msg: { id: genId(), sender: 'kawan', text: STREAM_ERROR_REPLY, timestamp: new Date() },
+          })
+          continue
+        }
+
+        if (event.type === 'psychologists') {
+          // TODO: render psychologist recommendations — deferred to a later issue.
+          continue
+        }
+
+        if (event.type === 'done') {
+          // No-op: stream completion is handled by the for-await loop ending.
+          continue
+        }
+      }
+    } finally {
       dispatch({ type: 'SET_TYPING', value: false })
-      const replyText = level === 'high' ? CRISIS_L3_REPLY : DUMMY_REPLY
-      dispatch({
-        type: 'ADD_MSG',
-        msg: {
-          id: genId(),
-          sender: 'kawan',
-          text: replyText,
-          timestamp: new Date(),
-        },
-      })
-    }, 1600)
+      dispatch({ type: 'SET_STREAMING', value: false })
+      abortControllerRef.current = null
+    }
   }, [])
+
+  const handleSend = useCallback(
+    (text: string) => {
+      if (!text.trim() || chatState.isStreaming) return
+
+      const level = detectCrisis(text)
+      const userMsg: ChatMessage = {
+        id: genId(),
+        sender: 'user',
+        text: text.trim(),
+        timestamp: new Date(),
+        crisisLevel: level !== 'none' ? level : undefined,
+      }
+
+      dispatch({ type: 'ADD_MSG', msg: userMsg })
+      setComposerValue('')
+
+      if (level === 'critical') {
+        dispatch({ type: 'SHOW_TAKEOVER' })
+      } else if (level === 'high') {
+        dispatch({ type: 'SHOW_BANNER', triggerMsgId: userMsg.id })
+      }
+
+      void streamAssistantReply([...chatState.messages, userMsg], userMsg.id)
+    },
+    [chatState.messages, chatState.isStreaming, streamAssistantReply],
+  )
 
   function handleQuickReply(label: string) {
     if (label === 'Aku tulis sendiri') return
@@ -159,30 +232,13 @@ export function ChatExperience() {
         <TopBar onMenuClick={() => setSidebarOpen((v) => !v)} />
 
         <div style={{ flex: 1, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-          <div
-            className="cs-chat"
-            role="log"
-            aria-live="polite"
-            aria-label="Percakapan dengan Kawan"
-          >
-            <div className={`cs-chat-inner${chatState.showTakeover ? ' blurred' : ''}`}>
-              <div className="cs-day-divider">Mulai sekarang</div>
-              {chatState.messages.map((msg) => (
-                <div key={msg.id}>
-                  <MessageBubble
-                    sender={msg.sender}
-                    text={msg.text}
-                    timestamp={msg.timestamp}
-                  />
-                  {chatState.showBanner && chatState.bannerTriggerMsgId === msg.id && (
-                    <CrisisBanner onContinue={() => {}} />
-                  )}
-                </div>
-              ))}
-              {chatState.isTyping && <TypingIndicator />}
-              <div ref={scrollAnchorRef} />
-            </div>
-          </div>
+          <ChatStream
+            messages={chatState.messages}
+            isTyping={chatState.isTyping}
+            isTakeoverActive={chatState.showTakeover}
+            crisisBannerTriggerMsgId={chatState.showBanner ? chatState.bannerTriggerMsgId : undefined}
+            crisisBanner={<CrisisBanner onContinue={() => {}} />}
+          />
 
           {chatState.showTakeover && (
             <CrisisTakeover onResume={() => dispatch({ type: 'DISMISS_TAKEOVER' })} />
@@ -190,7 +246,7 @@ export function ChatExperience() {
         </div>
 
         <div style={{ padding: '8px 32px 0', maxWidth: 752, margin: '0 auto', width: '100%' }}>
-          <QuickReplies items={activeQuickReplies} onSelect={handleQuickReply} />
+          <QuickReplies items={activeQuickReplies} onSelect={handleQuickReply} disabled={chatState.isStreaming} />
         </div>
 
         <Composer
@@ -198,6 +254,7 @@ export function ChatExperience() {
           onChange={setComposerValue}
           onSend={() => handleSend(composerValue)}
           placeholder={chatState.showBanner ? 'Cerita pelan saja, sebanyak yang kamu mau...' : undefined}
+          disabled={chatState.isStreaming}
         />
       </main>
     </div>
