@@ -161,6 +161,9 @@ async function streamProviderText(provider: LLMProvider, request: ChatValidation
           system: request.system,
           messages: request.messages,
         })) {
+          if (event.type === 'error') {
+            throw new Error(event.message);
+          }
           if (event.type === 'text') {
             controller.enqueue(encoder.encode(event.delta));
           }
@@ -216,5 +219,10 @@ export async function handleChatRequest(
     return Response.json({ error: message }, { status: 500 });
   }
 
-  return streamProviderText(provider, validation.value);
+  try {
+    return await streamProviderText(provider, validation.value);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unable to stream provider response';
+    return Response.json({ error: message }, { status: 500 });
+  }
 }
