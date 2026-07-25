@@ -79,27 +79,35 @@ describe('ChatExperience', () => {
     expect(await screen.findByRole('alert')).toBeInTheDocument()
   })
 
-  it('shows the takeover immediately for critical local crisis text before the stream responds', async () => {
+  it('locks the chat flow when a streamed critical risk escalates to takeover', async () => {
     const user = userEvent.setup()
     let releaseDone!: () => void
     const done = new Promise<void>((resolve) => {
       releaseDone = resolve
     })
+    let capturedSignal: AbortSignal | undefined
 
-    mockedStreamChat.mockImplementation(() =>
-      (async function* () {
+    mockedStreamChat.mockImplementation((_, options) => {
+      capturedSignal = options?.signal
+      return (async function* () {
+        yield {
+          type: 'risk',
+          risk: { score: 97, level: 'critical', shouldEscalate: true },
+        } as const
         await done
         yield { type: 'done', stopReason: 'stop' } as const
-      })(),
-    )
+      })()
+    })
 
     render(<ChatExperience />)
     await enterChat(user)
 
-    await user.type(screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' }), 'Aku pengen mati')
+    await user.type(screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' }), 'Aku cuma capek banget hari ini')
     await user.click(screen.getByRole('button', { name: 'Kirim pesan' }))
 
     expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    await waitFor(() => expect(capturedSignal?.aborted).toBe(true))
+    expect(screen.getByRole('button', { name: 'Kirim pesan' })).toBeDisabled()
 
     releaseDone()
     await waitFor(() => expect(mockedStreamChat).toHaveBeenCalledTimes(1))
