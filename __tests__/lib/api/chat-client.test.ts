@@ -68,6 +68,39 @@ describe('streamChat', () => {
     ])
   })
 
+  it('parses CRLF-delimited SSE frames', async () => {
+    const fetchImpl = jest.fn(async () =>
+      makeMockResponse(
+        [
+          'event: text\r\ndata: {"delta":"Hi"}\r\n\r\n',
+          'event: done\r\ndata: {"stopReason":"stop"}\r\n\r\n',
+        ],
+        { status: 200, ok: true },
+      ),
+    )
+
+    const events = await collectEvents(
+      streamChat([{ role: 'user', content: 'Halo' }], { fetchImpl: fetchImpl as typeof fetch }),
+    )
+
+    expect(events).toEqual([
+      { type: 'text', delta: 'Hi' },
+      { type: 'done', stopReason: 'stop' },
+    ])
+  })
+
+  it('flushes a trailing buffered frame with no closing blank line', async () => {
+    const fetchImpl = jest.fn(async () =>
+      makeMockResponse(['event: done\ndata: {"stopReason":"stop"}\n'], { status: 200, ok: true }),
+    )
+
+    const events = await collectEvents(
+      streamChat([{ role: 'user', content: 'Halo' }], { fetchImpl: fetchImpl as typeof fetch }),
+    )
+
+    expect(events).toEqual([{ type: 'done', stopReason: 'stop' }])
+  })
+
   it('maps non-OK responses to a friendly error event', async () => {
     const fetchImpl = jest.fn(async () =>
       makeMockResponse([], {

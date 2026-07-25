@@ -167,6 +167,17 @@ export function ChatExperience() {
             type: 'ADD_MSG',
             msg: { id: genId(), sender: 'kawan', text: STREAM_ERROR_REPLY, timestamp: new Date() },
           })
+          continue
+        }
+
+        if (event.type === 'psychologists') {
+          // TODO: render psychologist recommendations — deferred to a later issue.
+          continue
+        }
+
+        if (event.type === 'done') {
+          // No-op: stream completion is handled by the for-await loop ending.
+          continue
         }
       }
     } finally {

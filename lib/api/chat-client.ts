@@ -64,11 +64,17 @@ function toChatStreamEvent(eventName: string, payload: unknown): ChatStreamEvent
   }
 }
 
+function findFrameBoundary(buffer: string): { index: number; length: number } | null {
+  const match = /\r\n\r\n|\n\n/.exec(buffer)
+  if (!match) return null
+  return { index: match.index, length: match[0].length }
+}
+
 function parseSseFrame(frame: string): ChatStreamEvent | null {
   let eventName = 'message'
   let dataLine: string | undefined
 
-  for (const line of frame.split('\n')) {
+  for (const line of frame.split(/\r\n|\n/)) {
     if (line.startsWith('event: ')) {
       eventName = line.slice('event: '.length)
     } else if (line.startsWith('data: ')) {
@@ -145,14 +151,20 @@ export async function* streamChat(
 
       buffer += decoder.decode(value, { stream: true })
 
-      let boundary = buffer.indexOf('\n\n')
-      while (boundary !== -1) {
-        const frame = buffer.slice(0, boundary)
-        buffer = buffer.slice(boundary + 2)
+      let boundary = findFrameBoundary(buffer)
+      while (boundary) {
+        const frame = buffer.slice(0, boundary.index)
+        buffer = buffer.slice(boundary.index + boundary.length)
         const event = parseSseFrame(frame)
         if (event) yield event
-        boundary = buffer.indexOf('\n\n')
+        boundary = findFrameBoundary(buffer)
       }
+    }
+
+    buffer += decoder.decode()
+    if (buffer.trim() !== '') {
+      const event = parseSseFrame(buffer)
+      if (event) yield event
     }
   } catch (error) {
     if (!isAbortError(error)) {
