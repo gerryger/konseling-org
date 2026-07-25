@@ -1,3 +1,5 @@
+import 'server-only';
+
 declare const require: NodeRequire;
 
 import type {
@@ -62,10 +64,7 @@ type AnthropicClientLike = {
   };
 };
 
-type AnthropicCtorLike = new (options: {
-  apiKey: string;
-  dangerouslyAllowBrowser?: boolean;
-}) => AnthropicClientLike;
+type AnthropicCtorLike = new (options: { apiKey: string }) => AnthropicClientLike;
 
 const anthropicModule = require('@anthropic-ai/sdk') as {
   default?: AnthropicCtorLike;
@@ -99,25 +98,33 @@ function toAnthropicTool(tool: LLMProviderToolSpec): AnthropicTool {
   };
 }
 
-function toAnthropicMessage(message: LLMProviderMessage): AnthropicMessage {
-  if (message.role === 'tool_result') {
-    return {
-      role: 'user',
-      content: [
-        {
-          type: 'tool_result',
-          tool_use_id: message.toolCallId,
-          content: message.content,
-          ...(message.isError ? { is_error: true } : {}),
-        },
-      ],
-    };
+function toAnthropicMessages(messages: LLMProviderMessage[]): AnthropicMessage[] {
+  const converted: AnthropicMessage[] = [];
+  let pendingToolResults: AnthropicToolResultBlock[] = [];
+
+  const flushToolResults = () => {
+    if (pendingToolResults.length === 0) return;
+    converted.push({ role: 'user', content: pendingToolResults });
+    pendingToolResults = [];
+  };
+
+  for (const message of messages) {
+    if (message.role === 'tool_result') {
+      pendingToolResults.push({
+        type: 'tool_result',
+        tool_use_id: message.toolCallId,
+        content: message.content,
+        ...(message.isError ? { is_error: true } : {}),
+      });
+      continue;
+    }
+
+    flushToolResults();
+    converted.push({ role: message.role, content: message.content });
   }
 
-  return {
-    role: message.role,
-    content: message.content,
-  };
+  flushToolResults();
+  return converted;
 }
 
 function extractTextDelta(event: AnthropicStreamEvent): string | null {
@@ -146,7 +153,6 @@ export class AnthropicProvider implements LLMProvider {
   private createClient(): AnthropicClientLike {
     return new AnthropicClientCtor({
       apiKey: this.apiKey,
-      dangerouslyAllowBrowser: true,
     });
   }
 
@@ -158,7 +164,7 @@ export class AnthropicProvider implements LLMProvider {
           model: this.model,
           max_tokens: this.maxTokens,
           system: request.system,
-          messages: request.messages.map(toAnthropicMessage) as unknown as Record<string, unknown>[],
+          messages: toAnthropicMessages(request.messages) as unknown as Record<string, unknown>[],
           ...(request.tools?.length
             ? { tools: request.tools.map(toAnthropicTool) as unknown as Record<string, unknown>[] }
             : {}),

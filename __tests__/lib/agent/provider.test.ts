@@ -28,7 +28,7 @@ describe('LLM provider foundation', () => {
     const provider = createLLMProvider(
       {
         provider: 'anthropic',
-        apiKey: 'test-key',
+        apiKey: 'anthropic-key',
         model: 'claude-sonnet-5',
         maxTokens: 512,
       },
@@ -38,5 +38,16 @@ describe('LLM provider foundation', () => {
     expect(provider).toBeInstanceOf(AnthropicProvider);
     expect(provider.name).toBe('anthropic');
     expect(provider.model).toBe('claude-sonnet-5');
+  });
+
+  it('rejects unsupported provider overrides', () => {
+    expect(() =>
+      createLLMProvider(
+        {
+          provider: 'unsupported' as never,
+        },
+        {} as NodeJS.ProcessEnv,
+      ),
+    ).toThrow('Unsupported LLM provider');
   });
 });

@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { AnthropicProvider } from './anthropic';
 import type { LLMProvider, LLMProviderName, LLMProviderSelection } from './types';
 
@@ -28,8 +30,6 @@ function resolveApiKey(provider: LLMProviderName, env: NodeJS.ProcessEnv): strin
       return env.OPENAI_API_KEY;
     case 'gemini':
       return env.GEMINI_API_KEY ?? env.GOOGLE_API_KEY;
-    default:
-      return undefined;
   }
 }
 
@@ -58,7 +58,9 @@ export function createLLMProvider(
     ...overrides,
   } satisfies LLMProviderSelection;
 
-  switch (selection.provider) {
+  const provider = normalizeProviderName(selection.provider);
+
+  switch (provider) {
     case 'anthropic':
       return new AnthropicProvider({
         apiKey: selection.apiKey ?? '',
@@ -67,10 +69,6 @@ export function createLLMProvider(
       });
     case 'openai':
     case 'gemini':
-      throw new Error(`LLM provider "${selection.provider}" is not implemented yet`);
-    default: {
-      const exhaustiveCheck: never = selection.provider;
-      return exhaustiveCheck;
-    }
+      throw new Error(`LLM provider "${provider}" is not implemented yet`);
   }
 }

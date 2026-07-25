@@ -1,7 +1,5 @@
 export type LLMProviderName = 'anthropic' | 'openai' | 'gemini';
 
-export type LLMProviderRole = 'user' | 'assistant' | 'tool_result';
-
 export interface LLMProviderTextMessage {
   role: 'user' | 'assistant';
   content: string;
