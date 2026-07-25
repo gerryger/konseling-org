@@ -90,6 +90,30 @@ describe('chat api helpers', () => {
     expect(limited.retryAfterSeconds).toBeGreaterThan(0);
   });
 
+  it('returns a structured 500 when the provider stream fails', async () => {
+    const response = await handleChatRequest(
+      {
+        json: async () => ({ messages: [{ role: 'user', content: 'help' }] }),
+        headers: new Headers({
+          'content-type': 'application/json',
+          'x-forwarded-for': '203.0.113.100',
+        }),
+      } as Request,
+      {
+        providerFactory: () => ({
+          name: 'anthropic' as const,
+          model: 'test-model',
+          async *stream() {
+            yield { type: 'error', message: 'provider exploded' };
+          },
+        }),
+      },
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: 'provider exploded' });
+  });
+
   it('returns a structured 500 when the provider cannot be created', async () => {
     const response = await handleChatRequest(
       {
