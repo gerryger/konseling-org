@@ -1,12 +1,28 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { Phone, Heart } from 'lucide-react'
+import { Phone, Heart, Users } from 'lucide-react'
 import { MOCK_PSIKOLOG } from '@/lib/chat/mock-data'
 import { PsikologCard } from './psikolog-card'
 
 interface CrisisTakeoverProps {
   onResume: () => void
+}
+
+function OrangTerdekatCard() {
+  return (
+    <a href="#" className="cs-takeover-card" aria-label="Bicara dengan orang terdekat — copy final menyusul">
+      <span className="av" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #c084fc 100%)' }}>
+        <Users size={16} aria-hidden="true" />
+      </span>
+      <span className="nm">Orang terdekat</span>
+      <span className="tg">TODO: copy final dari product untuk kartu ini</span>
+      <span className="price">
+        <span className="p">Minta dukungan</span>
+        <span className="cta">Hubungi</span>
+      </span>
+    </a>
+  )
 }
 
 export function CrisisTakeover({ onResume }: CrisisTakeoverProps) {
@@ -51,11 +67,14 @@ export function CrisisTakeover({ onResume }: CrisisTakeoverProps) {
       </a>
 
       <div className="cs-takeover-grid" role="list" aria-label="Psikolog yang bisa dihubungi">
-        {MOCK_PSIKOLOG.map((p) => (
+        {MOCK_PSIKOLOG.slice(0, 2).map((p) => (
           <div key={p.initial} role="listitem">
             <PsikologCard psikolog={p} variant="takeover" />
           </div>
         ))}
+        <div role="listitem">
+          <OrangTerdekatCard />
+        </div>
       </div>
 
       <div className="cs-takeover-foot">
