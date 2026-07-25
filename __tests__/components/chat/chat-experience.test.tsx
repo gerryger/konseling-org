@@ -79,6 +79,24 @@ describe('ChatExperience', () => {
     expect(await screen.findByRole('alert')).toBeInTheDocument()
   })
 
+  it('shows the takeover immediately for critical local crisis text before the stream responds', async () => {
+    const user = userEvent.setup()
+
+    mockedStreamChat.mockImplementation(() => {
+      throw new Error('stream should not start for local critical crisis')
+    })
+
+    render(<ChatExperience />)
+    await enterChat(user)
+
+    await user.type(screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' }), 'Aku pengen mati')
+    await user.click(screen.getByRole('button', { name: 'Kirim pesan' }))
+
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    expect(mockedStreamChat).toHaveBeenCalledTimes(0)
+    expect(screen.getByRole('button', { name: 'Kirim pesan' })).toBeDisabled()
+  })
+
   it('locks the chat flow when a streamed critical risk escalates to takeover', async () => {
     const user = userEvent.setup()
     let releaseDone!: () => void
