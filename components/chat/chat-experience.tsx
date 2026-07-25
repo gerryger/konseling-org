@@ -110,6 +110,12 @@ export function ChatExperience() {
   })
 
   useEffect(() => {
+    if (chatState.showTakeover) {
+      abortControllerRef.current?.abort()
+    }
+  }, [chatState.showTakeover])
+
+  useEffect(() => {
     return () => {
       abortControllerRef.current?.abort()
     }
@@ -156,6 +162,7 @@ export function ChatExperience() {
           // client-side detection already showed a banner/takeover immediately on send.
           if (event.risk.level === 'critical') {
             dispatch({ type: 'SHOW_TAKEOVER' })
+            controller.abort()
           } else if (event.risk.level === 'high') {
             dispatch({ type: 'SHOW_BANNER', triggerMsgId: bannerTriggerId })
           }
@@ -189,7 +196,7 @@ export function ChatExperience() {
 
   const handleSend = useCallback(
     (text: string) => {
-      if (!text.trim() || chatState.isStreaming) return
+      if (!text.trim() || chatState.isStreaming || chatState.showTakeover) return
 
       const level = detectCrisis(text)
       const userMsg: ChatMessage = {
@@ -205,13 +212,14 @@ export function ChatExperience() {
 
       if (level === 'critical') {
         dispatch({ type: 'SHOW_TAKEOVER' })
+        return
       } else if (level === 'high') {
         dispatch({ type: 'SHOW_BANNER', triggerMsgId: userMsg.id })
       }
 
       void streamAssistantReply([...chatState.messages, userMsg], userMsg.id)
     },
-    [chatState.messages, chatState.isStreaming, streamAssistantReply],
+    [chatState.messages, chatState.isStreaming, chatState.showTakeover, streamAssistantReply],
   )
 
   function handleQuickReply(label: string) {
@@ -246,7 +254,7 @@ export function ChatExperience() {
         </div>
 
         <div style={{ padding: '8px 32px 0', maxWidth: 752, margin: '0 auto', width: '100%' }}>
-          <QuickReplies items={activeQuickReplies} onSelect={handleQuickReply} disabled={chatState.isStreaming} />
+          <QuickReplies items={activeQuickReplies} onSelect={handleQuickReply} disabled={chatState.isStreaming || chatState.showTakeover} />
         </div>
 
         <Composer
@@ -254,7 +262,7 @@ export function ChatExperience() {
           onChange={setComposerValue}
           onSend={() => handleSend(composerValue)}
           placeholder={chatState.showBanner ? 'Cerita pelan saja, sebanyak yang kamu mau...' : undefined}
-          disabled={chatState.isStreaming}
+          disabled={chatState.isStreaming || chatState.showTakeover}
         />
       </main>
     </div>

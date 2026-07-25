@@ -81,17 +81,10 @@ describe('ChatExperience', () => {
 
   it('shows the takeover immediately for critical local crisis text before the stream responds', async () => {
     const user = userEvent.setup()
-    let releaseDone!: () => void
-    const done = new Promise<void>((resolve) => {
-      releaseDone = resolve
-    })
 
-    mockedStreamChat.mockImplementation(() =>
-      (async function* () {
-        await done
-        yield { type: 'done', stopReason: 'stop' } as const
-      })(),
-    )
+    mockedStreamChat.mockImplementation(() => {
+      throw new Error('stream should not start for local critical crisis')
+    })
 
     render(<ChatExperience />)
     await enterChat(user)
@@ -100,6 +93,39 @@ describe('ChatExperience', () => {
     await user.click(screen.getByRole('button', { name: 'Kirim pesan' }))
 
     expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    expect(mockedStreamChat).toHaveBeenCalledTimes(0)
+    expect(screen.getByRole('button', { name: 'Kirim pesan' })).toBeDisabled()
+  })
+
+  it('locks the chat flow when a streamed critical risk escalates to takeover', async () => {
+    const user = userEvent.setup()
+    let releaseDone!: () => void
+    const done = new Promise<void>((resolve) => {
+      releaseDone = resolve
+    })
+    let capturedSignal: AbortSignal | undefined
+
+    mockedStreamChat.mockImplementation((_, options) => {
+      capturedSignal = options?.signal
+      return (async function* () {
+        yield {
+          type: 'risk',
+          risk: { score: 97, level: 'critical', shouldEscalate: true },
+        } as const
+        await done
+        yield { type: 'done', stopReason: 'stop' } as const
+      })()
+    })
+
+    render(<ChatExperience />)
+    await enterChat(user)
+
+    await user.type(screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' }), 'Aku cuma capek banget hari ini')
+    await user.click(screen.getByRole('button', { name: 'Kirim pesan' }))
+
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    await waitFor(() => expect(capturedSignal?.aborted).toBe(true))
+    expect(screen.getByRole('button', { name: 'Kirim pesan' })).toBeDisabled()
 
     releaseDone()
     await waitFor(() => expect(mockedStreamChat).toHaveBeenCalledTimes(1))
