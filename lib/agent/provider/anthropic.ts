@@ -24,10 +24,27 @@ type AnthropicToolResultBlock = {
   is_error?: boolean;
 };
 
+type AnthropicContentBlock =
+  | {
+      type: 'text';
+      text: string;
+    }
+  | {
+      type: 'tool_use';
+      id: string;
+      name: string;
+      input: unknown;
+    }
+  | AnthropicToolResultBlock;
+
 type AnthropicMessage =
   | {
-      role: 'user' | 'assistant';
+      role: 'user';
       content: string;
+    }
+  | {
+      role: 'assistant';
+      content: AnthropicContentBlock[];
     }
   | {
       role: 'user';
@@ -42,7 +59,7 @@ type AnthropicStreamEvent = {
   };
 };
 
-type AnthropicContentBlock = {
+type AnthropicStreamContentBlock = {
   type?: string;
   id?: string;
   name?: string;
@@ -50,7 +67,7 @@ type AnthropicContentBlock = {
 };
 
 type AnthropicFinalMessage = {
-  content?: AnthropicContentBlock[];
+  content?: AnthropicStreamContentBlock[];
   stop_reason?: unknown;
 };
 
@@ -120,7 +137,29 @@ function toAnthropicMessages(messages: LLMProviderMessage[]): AnthropicMessage[]
     }
 
     flushToolResults();
-    converted.push({ role: message.role, content: message.content });
+
+    if ('toolCalls' in message) {
+      const content: AnthropicContentBlock[] = [];
+      if (message.content?.trim()) {
+        content.push({ type: 'text', text: message.content.trim() });
+      }
+      for (const toolCall of message.toolCalls) {
+        content.push({
+          type: 'tool_use',
+          id: toolCall.id,
+          name: toolCall.name,
+          input: toolCall.input,
+        });
+      }
+      converted.push({ role: 'assistant', content });
+      continue;
+    }
+
+    if (message.role === 'user') {
+      converted.push({ role: 'user', content: message.content });
+    } else {
+      converted.push({ role: 'assistant', content: [{ type: 'text', text: message.content }] });
+    }
   }
 
   flushToolResults();

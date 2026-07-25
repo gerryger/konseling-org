@@ -43,6 +43,21 @@ if (typeof globalThis.Response === 'undefined') {
 
 import { handleChatRequest, checkChatRateLimit, resetChatRateLimitStore, validateChatRequestBody } from '../../../lib/api/chat';
 
+function parseSseEvents(bodyText: string): Array<{ event: string; data: unknown }> {
+  return bodyText
+    .trim()
+    .split(/\n\n+/)
+    .filter(Boolean)
+    .map((block) => {
+      const eventLine = block.split('\n').find((line) => line.startsWith('event: '));
+      const dataLine = block.split('\n').find((line) => line.startsWith('data: '));
+      return {
+        event: eventLine?.slice('event: '.length) ?? '',
+        data: JSON.parse(dataLine?.slice('data: '.length) ?? 'null'),
+      };
+    });
+}
+
 describe('chat api helpers', () => {
   beforeEach(() => {
     resetChatRateLimitStore();
@@ -64,16 +79,12 @@ describe('chat api helpers', () => {
       error: 'messages cannot exceed 20 items',
     });
 
-    expect(
-      validateChatRequestBody({ messages: [{ role: 'user', content: 'x'.repeat(4_001) }] }),
-    ).toEqual({
+    expect(validateChatRequestBody({ messages: [{ role: 'user', content: 'x'.repeat(4_001) }] })).toEqual({
       ok: false,
       error: 'messages[0].content cannot exceed 4000 characters',
     });
 
-    expect(
-      validateChatRequestBody({ messages: [{ role: 'user', content: '' }] }),
-    ).toEqual({
+    expect(validateChatRequestBody({ messages: [{ role: 'user', content: '' }] })).toEqual({
       ok: false,
       error: 'messages[0].content must be a non-empty string',
     });
@@ -90,7 +101,7 @@ describe('chat api helpers', () => {
     expect(limited.retryAfterSeconds).toBeGreaterThan(0);
   });
 
-  it('returns a structured 500 when the provider stream fails', async () => {
+  it('returns SSE error events when the provider stream fails', async () => {
     const response = await handleChatRequest(
       {
         json: async () => ({ messages: [{ role: 'user', content: 'help' }] }),
@@ -110,11 +121,12 @@ describe('chat api helpers', () => {
       },
     );
 
-    expect(response.status).toBe(500);
-    await expect(response.json()).resolves.toEqual({ error: 'provider exploded' });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+    await expect(response.text()).resolves.toBe('event: error\ndata: {"message":"provider exploded"}\n\n');
   });
 
-  it('returns a structured 500 when the provider cannot be created', async () => {
+  it('returns SSE error events when the provider cannot be created', async () => {
     const response = await handleChatRequest(
       {
         json: async () => ({ messages: [{ role: 'user', content: 'help' }] }),
@@ -130,30 +142,49 @@ describe('chat api helpers', () => {
       },
     );
 
-    expect(response.status).toBe(500);
-    await expect(response.json()).resolves.toEqual({ error: 'Missing API key' });
+    expect(response.status).toBe(200);
+    const events = parseSseEvents(await response.text());
+    expect(events).toEqual([{ event: 'error', data: { message: 'Missing API key' } }]);
   });
 
-  it('streams provider text end-to-end for a valid request', async () => {
-    const request = {
-      json: async () => ({
-        messages: [{ role: 'user', content: 'Halo' }],
-      }),
-      headers: new Headers({
-        'content-type': 'application/json',
-        'x-forwarded-for': '198.51.100.1',
-      }),
-    } as Request;
+  it('streams crisis scoring and tool round-trips end-to-end', async () => {
+    let streamCallCount = 0;
 
     const response = await handleChatRequest(
-      request,
+      {
+        json: async () => ({
+          messages: [{ role: 'user', content: 'Aku sangat putus asa dan ingin mengakhiri semuanya' }],
+        }),
+        headers: new Headers({
+          'content-type': 'application/json',
+          'x-forwarded-for': '198.51.100.1',
+        }),
+      } as Request,
       {
         providerFactory: () => ({
           name: 'anthropic' as const,
           model: 'test-model',
-          async *stream() {
-            yield { type: 'text', delta: 'Halo' };
-            yield { type: 'text', delta: ' dunia' };
+          async *stream(request) {
+            streamCallCount += 1;
+
+            if (streamCallCount === 1) {
+              expect(request.tools?.map((tool) => tool.name)).toEqual(expect.arrayContaining(['assess_risk', 'get_psychologists']));
+              yield { type: 'text', delta: 'Aku akan cek risikonya.' };
+              yield {
+                type: 'tool_call',
+                toolCall: {
+                  id: 'tool-assess-risk-1',
+                  name: 'assess_risk',
+                  input: { risk_score: 82 },
+                },
+              };
+              yield { type: 'done', stopReason: 'tool_use' as const };
+              return;
+            }
+
+            expect(request.messages.some((message) => message.role === 'assistant' && 'toolCalls' in message)).toBe(true);
+            expect(request.messages.some((message) => message.role === 'tool_result')).toBe(true);
+            yield { type: 'text', delta: 'Saya tetap di sini dan akan bantu langkah berikutnya.' };
             yield { type: 'done', stopReason: 'end_turn' as const };
           },
         }),
@@ -162,8 +193,21 @@ describe('chat api helpers', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toContain('text/plain');
-    await expect(response.text()).resolves.toBe('Halo dunia');
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+
+    const events = parseSseEvents(await response.text());
+    expect(events.map((event) => event.event)).toEqual(['text', 'risk', 'text', 'done']);
+    expect(events[0]).toEqual({ event: 'text', data: { delta: 'Aku akan cek risikonya.' } });
+    expect(events[1]).toEqual({
+      event: 'risk',
+      data: {
+        score: 82,
+        level: 'high',
+        shouldEscalate: true,
+      },
+    });
+    expect(events[2]).toEqual({ event: 'text', data: { delta: 'Saya tetap di sini dan akan bantu langkah berikutnya.' } });
+    expect(events[3]).toEqual({ event: 'done', data: { stopReason: 'end_turn' } });
   });
 
   it('returns 429 when the request exceeds the limit', async () => {

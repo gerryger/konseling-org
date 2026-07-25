@@ -1,7 +1,7 @@
 import { TextEncoder } from 'node:util';
 
 import { SYSTEM_PROMPT } from '../agent/system-prompt';
-import { createLLMProvider } from '../agent/provider/factory';
+import { runAgentConversation } from '../agent/run-agent';
 import type { LLMProvider, LLMProviderMessage } from '../agent/provider/types';
 
 export interface ChatRequestMessage {
@@ -128,45 +128,53 @@ export function resetChatRateLimitStore(): void {
   rateLimitStore.clear();
 }
 
-async function streamProviderText(provider: LLMProvider, request: ChatValidationSuccess): Promise<Response> {
-  const chunks: string[] = [];
+async function streamAgentResponse(
+  request: ChatValidationSuccess,
+  deps?: {
+    providerFactory?: () => LLMProvider;
+  },
+): Promise<Response> {
+  const stream = runAgentConversation({
+    system: request.system,
+    messages: request.messages,
+    providerFactory: deps?.providerFactory,
+  });
+
+  const serialize = (event: Awaited<ReturnType<typeof runAgentConversation>> extends AsyncGenerator<infer E> ? E : never) => {
+    switch (event.type) {
+      case 'text':
+        return `event: text\ndata: ${JSON.stringify({ delta: event.delta })}\n\n`;
+      case 'risk':
+        return `event: risk\ndata: ${JSON.stringify(event.risk)}\n\n`;
+      case 'psychologists':
+        return `event: psychologists\ndata: ${JSON.stringify({ psychologists: event.psychologists })}\n\n`;
+      case 'done':
+        return `event: done\ndata: ${JSON.stringify({ stopReason: event.stopReason })}\n\n`;
+      case 'error':
+        return `event: error\ndata: ${JSON.stringify({ message: event.message })}\n\n`;
+    }
+  };
 
   if (typeof globalThis.ReadableStream !== 'function') {
-    for await (const event of provider.stream({
-      system: request.system,
-      messages: request.messages,
-    })) {
-      if (event.type === 'error') {
-        throw new Error(event.message);
-      }
-      if (event.type === 'text') {
-        chunks.push(event.delta);
-      }
+    const chunks: string[] = [];
+    for await (const event of stream) {
+      chunks.push(serialize(event as never));
     }
 
     return new Response(chunks.join(''), {
       headers: {
-        'content-type': 'text/plain; charset=utf-8',
+        'content-type': 'text/event-stream; charset=utf-8',
         'cache-control': 'no-store',
       },
     });
   }
 
   const encoder = new TextEncoder();
-
-  const stream = new ReadableStream<Uint8Array>({
+  const readableStream = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const event of provider.stream({
-          system: request.system,
-          messages: request.messages,
-        })) {
-          if (event.type === 'error') {
-            throw new Error(event.message);
-          }
-          if (event.type === 'text') {
-            controller.enqueue(encoder.encode(event.delta));
-          }
+        for await (const event of stream) {
+          controller.enqueue(encoder.encode(serialize(event as never)));
         }
         controller.close();
       } catch (error) {
@@ -175,9 +183,9 @@ async function streamProviderText(provider: LLMProvider, request: ChatValidation
     },
   });
 
-  return new Response(stream, {
+  return new Response(readableStream, {
     headers: {
-      'content-type': 'text/plain; charset=utf-8',
+      'content-type': 'text/event-stream; charset=utf-8',
       'cache-control': 'no-store',
     },
   });
@@ -187,7 +195,7 @@ export async function handleChatRequest(
   request: Request,
   deps?: {
     now?: () => number;
-    providerFactory?: typeof createLLMProvider;
+    providerFactory?: () => LLMProvider;
   },
 ): Promise<Response> {
   const body = await request.json().catch(() => null);
@@ -209,20 +217,7 @@ export async function handleChatRequest(
     );
   }
 
-  const providerFactory = deps?.providerFactory ?? createLLMProvider;
-  let provider: LLMProvider;
-
-  try {
-    provider = providerFactory();
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unable to initialize provider';
-    return Response.json({ error: message }, { status: 500 });
-  }
-
-  try {
-    return await streamProviderText(provider, validation.value);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unable to stream provider response';
-    return Response.json({ error: message }, { status: 500 });
-  }
+  return streamAgentResponse(validation.value, {
+    providerFactory: deps?.providerFactory,
+  });
 }

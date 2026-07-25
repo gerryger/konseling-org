@@ -5,6 +5,12 @@ export interface LLMProviderTextMessage {
   content: string;
 }
 
+export interface LLMProviderAssistantToolUseMessage {
+  role: 'assistant';
+  content?: string;
+  toolCalls: LLMProviderToolCall[];
+}
+
 export interface LLMProviderToolResultMessage {
   role: 'tool_result';
   toolCallId: string;
@@ -12,7 +18,7 @@ export interface LLMProviderToolResultMessage {
   isError?: boolean;
 }
 
-export type LLMProviderMessage = LLMProviderTextMessage | LLMProviderToolResultMessage;
+export type LLMProviderMessage = LLMProviderTextMessage | LLMProviderAssistantToolUseMessage | LLMProviderToolResultMessage;
 
 export interface LLMProviderToolSpec {
   name: string;
