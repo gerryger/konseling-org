@@ -11,14 +11,14 @@ interface CrisisTakeoverProps {
 
 function OrangTerdekatCard() {
   return (
-    <a href="#" className="cs-takeover-card" aria-label="Bicara dengan orang terdekat — copy final menyusul">
+    <a href="#" className="cs-takeover-card" aria-label="Hubungi orang terdekat — aku bantu susun pesannya">
       <span className="av" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #c084fc 100%)' }}>
         <Users size={16} aria-hidden="true" />
       </span>
       <span className="nm">Orang terdekat</span>
-      <span className="tg">TODO: copy final dari product untuk kartu ini</span>
+      <span className="tg">Aku bantu susun pesan singkat ke orang yang kamu percaya.</span>
       <span className="price">
-        <span className="p">Minta dukungan</span>
+        <span className="p">Bikin pesan</span>
         <span className="cta">Hubungi</span>
       </span>
     </a>
@@ -78,7 +78,7 @@ export function CrisisTakeover({ onResume }: CrisisTakeoverProps) {
       </div>
 
       <div className="cs-takeover-foot">
-        <a href="#">Bicara dengan orang terdekat</a>
+        <a href="#">Hubungi orang terdekat</a>
         <span aria-hidden="true" style={{ color: 'rgba(255,255,255,0.4)' }}>·</span>
         <a href="#">Latihan napas singkat</a>
       </div>

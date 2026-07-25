@@ -34,7 +34,7 @@ export function FeaturesSection() {
           <BentoSmall variant="lib" icon={<BookOpen className="w-[22px] h-[22px]" />} title="Perpustakaan refleksi" desc="Panduan, latihan grounding, dan bacaan singkat untuk menemanimu memahami diri." stats={[{ n: "120+", l: "Artikel" }, { n: "25", l: "Latihan" }]} />
           <BentoSmall variant="komunitas" icon={<Users className="w-[22px] h-[22px]" />} title="Komunitas pendukung" desc="Berbagi cerita anonim dengan mereka yang mengerti — saling menguatkan, tanpa menghakimi." stats={[{ n: "8.5K", l: "Member" }, { n: "Anonim", l: "By default" }]} />
           <BentoSmall variant="psikolog" icon={<UserPlus className="w-[22px] h-[22px]" />} title="Direktori psikolog" desc="Cari psikolog bersertifikat HIMPSI berdasarkan keahlian, kota, dan tarif." stats={[{ n: "50+", l: "Mitra psikolog" }, { n: "12", l: "Kota" }]} />
-          <BentoSmall variant="aman" icon={<Lock className="w-[22px] h-[22px]" />} title="Privasi end-to-end" desc="Anonim secara default. Data terenkripsi. Tidak ada percakapan yang dijual atau dipakai untuk iklan." stats={[{ n: "E2E", l: "Encrypted" }, { n: "0", l: "Iklan / tracker" }]} />
+          <BentoSmall variant="aman" icon={<Lock className="w-[22px] h-[22px]" />} title="Privasi yang dijaga" desc="Anonim secara default. Percakapan dijaga sebaik mungkin. Tidak ada percakapan yang dijual atau dipakai untuk iklan." stats={[{ n: "Privat", l: "By default" }, { n: "0", l: "Iklan / tracker" }]} />
         </div>
       </div>
     </section>
