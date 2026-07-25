@@ -8,9 +8,16 @@ interface ComposerProps {
   onChange: (value: string) => void
   onSend: () => void
   placeholder?: string
+  disabled?: boolean
 }
 
-export function Composer({ value, onChange, onSend, placeholder = 'Ketik apa yang kamu rasakan...' }: ComposerProps) {
+export function Composer({
+  value,
+  onChange,
+  onSend,
+  placeholder = 'Ketik apa yang kamu rasakan...',
+  disabled = false,
+}: ComposerProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -23,7 +30,7 @@ export function Composer({ value, onChange, onSend, placeholder = 'Ketik apa yan
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      if (value.trim()) onSend()
+      if (value.trim() && !disabled) onSend()
     }
   }
 
@@ -48,13 +55,14 @@ export function Composer({ value, onChange, onSend, placeholder = 'Ketik apa yan
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label="Ketik pesan untuk Kawan"
+          disabled={disabled}
         />
 
         <button
           className="cs-send"
           type="button"
           aria-label="Kirim pesan"
-          disabled={!value.trim()}
+          disabled={!value.trim() || disabled}
           onClick={onSend}
         >
           <Send size={18} aria-hidden="true" />
