@@ -441,10 +441,13 @@ git checkout -- components/chat/chat-experience.tsx
 Run: `npm test -- crisis-guardrail`
 Expected: PASS (7 tests).
 
-- [ ] **Step 5: Run the FULL suite and confirm everything is green**
+- [ ] **Step 5: Confirm the guardrail is green and no regressions were introduced**
 
-Run: `npm test`
-Expected: PASS — the new guardrail file plus all pre-existing tests. `git status` shows only the new test file present (no app files modified).
+Run: `npm test -- crisis-guardrail`
+Expected: PASS (7 tests). `git status` shows only the new test file present (no app files modified).
+
+Then run the full suite to confirm no NEW failures: `npm test`
+Expected: the same 8 pre-existing `landing/` + `layout/` copy-drift suites fail as before (28 tests) and nothing else — all crisis/chat/lib suites, including the new guardrail, pass. Those pre-existing failures are OUT OF SCOPE for #25 and tracked in a separate issue (see Follow-ups).
 
 - [ ] **Step 6: Commit**
 
@@ -459,13 +462,14 @@ git commit -m "test(crisis): guard takeover locks the chat path (#25)"
 
 - [ ] `__tests__/crisis/crisis-guardrail.test.tsx` exists with Groups A–D and the sacred header comment.
 - [ ] `package.json` has `"test": "jest"`.
-- [ ] `npm test` runs the full suite green (guardrail + all existing tests).
+- [ ] `npm test -- crisis-guardrail` is green (7 tests), and the full suite shows no NEW failures beyond the pre-existing landing/layout copy-drift (tracked separately).
 - [ ] No `app/` or `components/` crisis behavior changed (all mutations reverted; `git status` clean except the new test file across the branch).
 - [ ] The `lib/chat/crisis-detection.ts` backend-classifier `TODO` is untouched.
 - [ ] Each guardrail group was proven non-vacuous via its mutation-sanity-check.
 
 ## Follow-ups (out of scope — logged for later issues)
 
+- **Stale landing/layout tests:** 8 suites (28 tests) fail on copy drift, pre-existing and unrelated to crisis. Tracked in #31; not fixed here.
 - The standalone `/crisis` page (`app/(marketing)/crisis/page.tsx`) is a placeholder with no 119 link; add a real hotline before guarding it.
 - `CrisisFab` presence/route could get a lightweight guardrail.
 - When optional accounts (#29) land, add an explicit "crisis reachable while logged out" assertion to Group B.
