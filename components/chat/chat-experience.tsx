@@ -1,9 +1,11 @@
 'use client'
 
 import { useReducer, useState, useCallback, useEffect, useRef } from 'react'
-import type { ChatMessage, ChatPhase } from '@/lib/chat/types'
+import type { ChatMessage, ChatPhase, Mood } from '@/lib/chat/types'
 import { detectCrisis } from '@/lib/chat/crisis-detection'
 import { streamChat } from '@/lib/api/chat-client'
+import { emitEvent } from '@/lib/analytics/events'
+import { recordVisit } from '@/lib/analytics/anon-id'
 import { Sidebar } from './sidebar'
 import { TopBar } from './top-bar'
 import { Composer } from './composer'
@@ -99,6 +101,8 @@ export function ChatExperience() {
   const [composerValue, setComposerValue] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const abortControllerRef = useRef<AbortController | null>(null)
+  const visitRecordedRef = useRef(false)
+  const sessionStartedRef = useRef(false)
 
   const [chatState, dispatch] = useReducer(reducer, {
     messages: [INITIAL_MESSAGE],
@@ -121,7 +125,24 @@ export function ChatExperience() {
     }
   }, [])
 
-  function handleMoodContinue() {
+  // Retention instrumentation (anonymous, content-free). Best-effort and fire-and-forget:
+  // emitEvent never throws or blocks, so none of this can affect chat or the crisis flow.
+  // Return-visit: fire once on load when this browser has a prior visit past the threshold.
+  useEffect(() => {
+    if (visitRecordedRef.current) return
+    visitRecordedRef.current = true
+    if (recordVisit()) emitEvent('return_visit')
+  }, [])
+
+  // Session start: fire exactly once when the user reaches the chat phase.
+  useEffect(() => {
+    if (phase !== 'chat' || sessionStartedRef.current) return
+    sessionStartedRef.current = true
+    emitEvent('session_start')
+  }, [phase])
+
+  function handleMoodContinue(mood?: Mood) {
+    emitEvent('mood_checkin', { mood: mood ?? 'skipped' })
     const disclaimerAccepted =
       typeof window !== 'undefined' && localStorage.getItem(DISCLAIMER_KEY) === 'true'
     setPhase(disclaimerAccepted ? 'chat' : 'disclaimer')
