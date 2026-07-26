@@ -51,6 +51,11 @@ describe('Group A — 119 SEJIWA hotline is always reachable', () => {
 
 // Drives the mood → chat entry. Disclaimer is pre-accepted so we land on the
 // composer. This is onboarding, NOT auth — the crisis path stays anonymous.
+//
+// NOTE: 'Biasa — Datar' and 'Lanjutkan' are mood-screen onboarding copy, not
+// crisis invariants themselves. If that copy drifts, this guardrail can fail
+// for a reason unrelated to crisis safety — flagged intentionally, since this
+// is currently the only UI path that reaches the composer.
 async function enterChat(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole('button', { name: 'Biasa — Datar' }))
   await user.click(screen.getByRole('button', { name: 'Lanjutkan' }))
@@ -118,6 +123,38 @@ describe('Group C — crisis UI is never auto-dismissed', () => {
     await user.click(screen.getByRole('button', { name: /Aku aman sekarang/i }))
 
     expect(onResume).toHaveBeenCalledTimes(1)
+  })
+
+  // Group C's other two tests guard the CrisisTakeover leaf component in isolation.
+  // This one guards the same invariant at the ChatExperience/reducer level, so a
+  // future auto-dismiss added to the PARENT (e.g. a monetization flow doing
+  // setTimeout(() => dispatch({ type: 'DISMISS_TAKEOVER' }), ...)) is caught too.
+  it('never auto-dismisses the takeover from the chat flow, even after time passes', async () => {
+    jest.useFakeTimers()
+    try {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+      localStorage.setItem(DISCLAIMER_KEY, 'true')
+      mockedStreamChat.mockReset()
+      mockedStreamChat.mockImplementation(() => {
+        throw new Error('stream must not start for a critical local crisis')
+      })
+      render(<ChatExperience />)
+      await enterChat(user)
+      await user.type(
+        screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' }),
+        'Aku pengen mati',
+      )
+      await user.click(screen.getByRole('button', { name: 'Kirim pesan' }))
+
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      act(() => {
+        jest.advanceTimersByTime(10 * 60 * 1000) // 10 minutes
+      })
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      expect(screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' })).toBeDisabled()
+    } finally {
+      jest.useRealTimers()
+    }
   })
 })
 

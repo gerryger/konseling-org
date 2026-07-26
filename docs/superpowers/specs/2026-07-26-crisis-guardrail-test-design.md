@@ -125,7 +125,9 @@ A guardrail that CI cannot run is not a guardrail. No other script changes.
 - `__tests__/crisis/crisis-guardrail.test.tsx` exists with Groups A–D and the sacred
   header comment.
 - `package.json` has `"test": "jest"`.
-- `npm test` runs the full suite green (new guardrail + all existing tests).
+- `npm test -- crisis-guardrail` is green, and the full `npm test` shows no NEW
+  failures beyond the pre-existing `landing/`/`layout/` copy-drift suites (tracked
+  separately in #31 — out of scope here).
 - No changes to any `app/` or `components/` crisis behavior — test + script only.
 - The `crisis-detection.ts` backend-classifier `TODO` is left untouched.
 
