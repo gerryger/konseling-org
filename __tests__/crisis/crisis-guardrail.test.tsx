@@ -89,3 +89,34 @@ describe('Group B — detection is never gated and never delayed', () => {
     expect(mockedStreamChat).toHaveBeenCalledTimes(0)
   })
 })
+
+describe('Group C — crisis UI is never auto-dismissed', () => {
+  it('never dismisses the takeover on a timer', () => {
+    jest.useFakeTimers()
+    try {
+      const onResume = jest.fn()
+      render(<CrisisTakeover onResume={onResume} />)
+
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+
+      act(() => {
+        jest.advanceTimersByTime(10 * 60 * 1000) // 10 minutes
+      })
+
+      expect(onResume).not.toHaveBeenCalled()
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    } finally {
+      jest.useRealTimers()
+    }
+  })
+
+  it('closes only when the user clicks the explicit resume button', async () => {
+    const user = userEvent.setup()
+    const onResume = jest.fn()
+    render(<CrisisTakeover onResume={onResume} />)
+
+    await user.click(screen.getByRole('button', { name: /Aku aman sekarang/i }))
+
+    expect(onResume).toHaveBeenCalledTimes(1)
+  })
+})
