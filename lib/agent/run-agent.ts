@@ -7,6 +7,7 @@ import type {
   LLMProviderStopReason,
   LLMProviderToolCall,
 } from './provider/types';
+import { buildTurnGuidance } from './turn-guidance';
 import { getAgentTool, getAgentToolSpecs } from './tools/registry';
 import type { AgentStreamEvent } from './tools/types';
 
@@ -59,9 +60,11 @@ export async function* runAgentConversation(
     let assistantText = '';
     const toolCalls: LLMProviderToolCall[] = [];
     let stopReason: LLMProviderStopReason = 'unknown';
+    const turnGuidance = buildTurnGuidance(getLatestUserMessage(conversation));
+    const system = `${input.system}\n\n${turnGuidance}`;
 
     try {
-      for await (const event of provider.stream({ system: input.system, messages: conversation, tools: toolSpecs })) {
+      for await (const event of provider.stream({ system, messages: conversation, tools: toolSpecs })) {
         if (event.type === 'text') {
           assistantText += event.delta;
           yield event;
