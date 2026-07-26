@@ -120,3 +120,29 @@ describe('Group C — crisis UI is never auto-dismissed', () => {
     expect(onResume).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('Group D — an active takeover locks the ordinary chat path', () => {
+  beforeEach(() => {
+    localStorage.setItem(DISCLAIMER_KEY, 'true')
+    mockedStreamChat.mockReset()
+    mockedStreamChat.mockImplementation(() => {
+      throw new Error('stream must not start for a critical local crisis')
+    })
+  })
+
+  it('disables the composer and send button while the takeover is active', async () => {
+    const user = userEvent.setup()
+    render(<ChatExperience />)
+    await enterChat(user)
+
+    await user.type(
+      screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' }),
+      'Aku pengen mati',
+    )
+    await user.click(screen.getByRole('button', { name: 'Kirim pesan' }))
+
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Kirim pesan' })).toBeDisabled()
+  })
+})
