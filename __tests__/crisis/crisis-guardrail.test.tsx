@@ -48,3 +48,44 @@ describe('Group A — 119 SEJIWA hotline is always reachable', () => {
     expect(link).toHaveAttribute('href', 'tel:119')
   })
 })
+
+// Drives the mood → chat entry. Disclaimer is pre-accepted so we land on the
+// composer. This is onboarding, NOT auth — the crisis path stays anonymous.
+async function enterChat(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole('button', { name: 'Biasa — Datar' }))
+  await user.click(screen.getByRole('button', { name: 'Lanjutkan' }))
+  await screen.findByRole('textbox', { name: 'Ketik pesan untuk Kawan' })
+}
+
+describe('Group B — detection is never gated and never delayed', () => {
+  beforeEach(() => {
+    localStorage.setItem(DISCLAIMER_KEY, 'true')
+    mockedStreamChat.mockReset()
+  })
+
+  it('detects the sacred crisis subset', () => {
+    expect(detectCrisis('aku pengen mati')).toBe('critical')
+    expect(detectCrisis('lebih baik mati')).toBe('critical')
+    expect(detectCrisis('aku capek sama hidup')).toBe('high')
+    expect(detectCrisis('nggak ada harapan lagi')).toBe('high')
+  })
+
+  it('shows the takeover immediately on critical text — before any AI stream', async () => {
+    const user = userEvent.setup()
+    mockedStreamChat.mockImplementation(() => {
+      throw new Error('stream must not start for a critical local crisis')
+    })
+
+    render(<ChatExperience />)
+    await enterChat(user)
+
+    await user.type(
+      screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' }),
+      'Aku pengen mati',
+    )
+    await user.click(screen.getByRole('button', { name: 'Kirim pesan' }))
+
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+    expect(mockedStreamChat).toHaveBeenCalledTimes(0)
+  })
+})
