@@ -1,6 +1,6 @@
 // Anonymous, content-free retention instrumentation — the client emitter.
 //
-// Exactly three event names, a strict field allowlist, and best-effort fire-and-forget
+// A closed set of event names, a strict field allowlist, and best-effort fire-and-forget
 // transport. This layer NEVER carries chat content, message text, or PII (AGENTS.md §5,
 // monetization design spec §8). `emitEvent` never throws and never blocks the UI or the
 // crisis flow — failures are swallowed on purpose.
@@ -8,7 +8,7 @@
 import type { Mood } from '../chat/types'
 import { getSessionId, getVisitorId } from './anon-id'
 
-export type RetentionEventName = 'session_start' | 'return_visit' | 'mood_checkin'
+export type RetentionEventName = 'session_start' | 'return_visit' | 'mood_checkin' | 'save_history_optin'
 
 // The only free-form-ish value we ever send, and it is a closed set.
 export type MoodBucket = Mood | 'skipped'

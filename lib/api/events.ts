@@ -7,7 +7,7 @@
 
 import type { Mood } from '../chat/types'
 
-export type RetentionEventName = 'session_start' | 'return_visit' | 'mood_checkin'
+export type RetentionEventName = 'session_start' | 'return_visit' | 'mood_checkin' | 'save_history_optin'
 export type MoodBucket = Mood | 'skipped'
 
 export interface RetentionEventRow {
@@ -18,7 +18,12 @@ export interface RetentionEventRow {
   mood?: MoodBucket
 }
 
-const EVENT_NAMES: readonly RetentionEventName[] = ['session_start', 'return_visit', 'mood_checkin']
+const EVENT_NAMES: readonly RetentionEventName[] = [
+  'session_start',
+  'return_visit',
+  'mood_checkin',
+  'save_history_optin',
+]
 const MOODS: readonly Mood[] = ['senang', 'biasa', 'lelah', 'cemas', 'hancur']
 const ALLOWED_FIELDS = new Set(['event', 'visitorId', 'sessionId', 'ts', 'mood'])
 
@@ -57,7 +62,7 @@ export function validateEventBody(
   }
 
   if (!isEventName(body.event)) {
-    return { ok: false, error: 'event must be one of session_start, return_visit, mood_checkin' }
+    return { ok: false, error: 'event must be one of session_start, return_visit, mood_checkin, save_history_optin' }
   }
 
   if (!isNonEmptyString(body.visitorId, MAX_TOKEN_LENGTH)) {
