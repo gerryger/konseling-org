@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 class TestResponse {
   status: number;
   headers: Headers;
