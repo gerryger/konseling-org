@@ -28,6 +28,13 @@ describe('analytics events', () => {
       expect(start!.mood).toBeUndefined()
     })
 
+    it('builds an envelope for save_history_optin with no mood field', () => {
+      const event = buildEvent('save_history_optin')
+      expect(event).not.toBeNull()
+      expect(event!.event).toBe('save_history_optin')
+      expect(event!.mood).toBeUndefined()
+    })
+
     it('never carries a field outside the allowlist', () => {
       const event = buildEvent('mood_checkin', { mood: 'skipped' })
       const allowed = new Set(['event', 'visitorId', 'sessionId', 'ts', 'mood'])

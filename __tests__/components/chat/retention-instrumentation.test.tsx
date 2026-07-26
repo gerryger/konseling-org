@@ -121,6 +121,29 @@ describe('retention instrumentation wiring', () => {
     }
   })
 
+  it('leaves the crisis takeover and 119 hotline reachable after the save-history opt-in is tapped', async () => {
+    const fetchMock = mockFetch()
+    const user = userEvent.setup()
+    render(<ChatExperience />)
+
+    await selectMoodAndContinue(user)
+
+    // Tap the new "simpan riwayat" opt-in in the sidebar — this must not interfere with
+    // crisis detection or the takeover in any way.
+    await user.click(screen.getByRole('button', { name: /simpan riwayat/i }))
+    await waitFor(() => {
+      expect(emittedEvents(fetchMock).some((e) => e.event === 'save_history_optin')).toBe(true)
+    })
+
+    const composer = screen.getByRole('textbox', { name: 'Ketik pesan untuk Kawan' })
+    await user.type(composer, 'aku pengen mati aja')
+    await user.click(screen.getByRole('button', { name: 'Kirim pesan' }))
+
+    const takeover = await screen.findByRole('alertdialog')
+    expect(takeover).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /tersedia 24 jam, gratis/i })).toHaveAttribute('href', 'tel:119')
+  })
+
   it('never breaks the UI or the crisis flow when the transport fails', async () => {
     // Transport rejects on every emit — instrumentation must be invisible to the user.
     mockFetch(() => Promise.reject(new Error('network down')))

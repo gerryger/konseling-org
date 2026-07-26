@@ -36,6 +36,16 @@ describe('validateEventBody', () => {
     expect(result.ok).toBe(true)
   })
 
+  it('accepts a well-formed save_history_optin', () => {
+    const result = validateEventBody({ ...validSessionStart, event: 'save_history_optin' })
+    expect(result.ok).toBe(true)
+  })
+
+  it('rejects mood on a save_history_optin event', () => {
+    const result = validateEventBody({ ...validSessionStart, event: 'save_history_optin', mood: 'cemas' })
+    expect(result.ok).toBe(false)
+  })
+
   it('rejects any field outside the allowlist (privacy guarantee)', () => {
     const result = validateEventBody({ ...validSessionStart, content: 'aku merasa sedih sekali' })
     expect(result.ok).toBe(false)
