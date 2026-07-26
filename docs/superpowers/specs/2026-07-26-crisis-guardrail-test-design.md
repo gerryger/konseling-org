@@ -119,6 +119,11 @@ A guardrail that CI cannot run is not a guardrail. No other script changes.
 - C1 uses `jest.useFakeTimers()` around an isolated `CrisisTakeover` render; the
   component has no dismissal timer today, so the test asserts the *absence* of one and
   will fail if a future change introduces auto-dismiss.
+- Group C also includes a parent-level test that drives `ChatExperience` into the
+  takeover and advances fake timers (via `userEvent.setup({ advanceTimers })`), asserting
+  the takeover persists and the composer stays disabled — this catches an auto-dismiss
+  introduced in the reducer/parent (where monetization wiring will live), not just in the
+  leaf component.
 
 ## Definition of done
 
