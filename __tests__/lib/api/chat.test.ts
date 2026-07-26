@@ -1,20 +1,39 @@
 class TestResponse {
   status: number;
   headers: Headers;
-  private readonly bodyText: string;
+  private readonly body: BodyInit | null;
 
   constructor(body: BodyInit | null = null, init: ResponseInit = {}) {
     this.status = init.status ?? 200;
     this.headers = new Headers(init.headers);
-    this.bodyText = typeof body === 'string' ? body : body ? String(body) : '';
+    this.body = body;
   }
 
   async text(): Promise<string> {
-    return this.bodyText;
+    if (typeof this.body === 'string') {
+      return this.body;
+    }
+
+    if (this.body && typeof (this.body as ReadableStream<Uint8Array>).getReader === 'function') {
+      const reader = (this.body as ReadableStream<Uint8Array>).getReader();
+      const decoder = new TextDecoder();
+      let output = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        output += decoder.decode(value, { stream: true });
+      }
+
+      output += decoder.decode();
+      return output;
+    }
+
+    return this.body ? String(this.body) : '';
   }
 
   async json(): Promise<unknown> {
-    return JSON.parse(this.bodyText || 'null');
+    return JSON.parse((await this.text()) || 'null');
   }
 
   static json(data: unknown, init: ResponseInit = {}): TestResponse {

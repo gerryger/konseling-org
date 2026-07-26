@@ -17,7 +17,7 @@ import { CrisisTakeover } from './crisis-takeover'
 const INITIAL_MESSAGE: ChatMessage = {
   id: 'initial',
   sender: 'kawan',
-  text: 'Halo, senang kamu mampir 🙂\nAku Kawan. Tidak ada agenda di sini — kita ngobrol pelan-pelan aja, sesuai kenyamananmu.\nKalau boleh tahu, ada apa yang bikin kamu memutuskan buat cerita malam ini?',
+  text: 'Halo, senang kamu mampir 🙂\nAku Kawan. Aku bakal dengerin pelan-pelan, tanpa menghakimi.\nKalau kamu mau, ceritain aja apa yang paling berat sekarang.',
   timestamp: new Date(),
 }
 
