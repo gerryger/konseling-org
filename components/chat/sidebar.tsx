@@ -1,7 +1,9 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Plus } from 'lucide-react'
 import { MOCK_HISTORY } from '@/lib/chat/mock-data'
+import { getSaveHistoryOptIn, setSaveHistoryOptIn } from '@/lib/chat/save-history-signal'
 
 interface SidebarProps {
   isOpen?: boolean
@@ -10,6 +12,18 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onClose, activeId = 'today-1' }: SidebarProps) {
+  const [saveHistory, setSaveHistory] = useState(false)
+
+  useEffect(() => {
+    setSaveHistory(getSaveHistoryOptIn())
+  }, [])
+
+  function handleToggleSaveHistory() {
+    const next = !saveHistory
+    setSaveHistory(next)
+    setSaveHistoryOptIn(next)
+  }
+
   return (
     <>
       {isOpen && (
@@ -64,6 +78,23 @@ export function Sidebar({ isOpen, onClose, activeId = 'today-1' }: SidebarProps)
             <div className="s">Login untuk simpan</div>
           </div>
           <button className="login" type="button">Login</button>
+        </div>
+
+        <div className="cs-save-history">
+          <div className="info">
+            <div className="n">Simpan riwayat</div>
+            <div className="s">Biar bisa dibuka lagi nanti kalau kamu login.</div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={saveHistory}
+            aria-label="Simpan riwayat percakapan"
+            className={`cs-switch${saveHistory ? ' on' : ''}`}
+            onClick={handleToggleSaveHistory}
+          >
+            <span className="cs-switch-thumb" aria-hidden="true" />
+          </button>
         </div>
       </aside>
     </>
