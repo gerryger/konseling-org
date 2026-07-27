@@ -2,6 +2,7 @@ export type ChatPhase = 'mood' | 'disclaimer' | 'chat';
 export type Mood = 'senang' | 'biasa' | 'lelah' | 'cemas' | 'hancur';
 export type CrisisLevel = 'none' | 'mild' | 'moderate' | 'high' | 'critical';
 export type Sender = 'kawan' | 'user';
+export type ReferralSource = 'directory' | 'crisis_banner' | 'crisis_takeover';
 
 export interface ChatMessage {
   id: string;
@@ -33,9 +34,12 @@ export interface HistoryGroup {
 }
 
 export interface Psikolog {
+  id: string;
   initial: string;
   gradient: string;
   name: string;
   tags: string[];
   price: string;
+  bookingUrl: string;
+  bio?: string;
 }

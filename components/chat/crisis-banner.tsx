@@ -38,8 +38,8 @@ export function CrisisBanner({ onContinue }: CrisisBannerProps) {
         </div>
         <div role="list" aria-label="Psikolog yang bisa dihubungi">
           {MOCK_PSIKOLOG.map((p) => (
-            <div key={p.initial} role="listitem">
-              <PsikologCard psikolog={p} variant="banner" />
+            <div key={p.id} role="listitem">
+              <PsikologCard psikolog={p} variant="banner" source="crisis_banner" />
             </div>
           ))}
         </div>

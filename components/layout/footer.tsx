@@ -1,7 +1,7 @@
 import Link from "next/link"
 
 const groups = [
-  { title: "Produk", items: [["Coba ngobrol", "/check-in"], ["Direktori psikolog", "/psikolog"], ["Perpustakaan refleksi", "#"], ["Komunitas", "#"]] },
+  { title: "Produk", items: [["Coba ngobrol", "/check-in"], ["Direktori psikolog", "/psikolog"], ["Dukung kami", "/psikolog#dukung-kami"], ["Perpustakaan refleksi", "#"], ["Komunitas", "#"]] },
   { title: "Bantuan", items: [["119 SEJIWA", "tel:119"], ["Crisis resources", "/crisis"], ["FAQ", "#"], ["Hubungi kami", "#"]] },
   { title: "Legal", items: [["Kebijakan privasi", "#"], ["Syarat & ketentuan", "#"], ["Disclaimer", "#"]] },
 ]
@@ -23,12 +23,14 @@ export function Footer() {
             Pendamping awal sebelum ke psikolog. Aman, empatik, dan mudah diakses untuk seluruh Indonesia.
           </p>
         </div>
-        {groups.map(g => (
+        {groups.map((g) => (
           <div key={g.title}>
             <h5 className="text-[13px] font-bold uppercase tracking-[0.05em] mb-4">{g.title}</h5>
             <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
-              {g.items.map(([l, h]) => (
-                <li key={h}><Link href={h} className="text-[14px] text-(--color-on-surface-variant) hover:text-(--color-primary)">{l}</Link></li>
+              {g.items.map(([label, href], index) => (
+                <li key={`${g.title}-${index}-${href}`}>
+                  <Link href={href} className="text-[14px] text-(--color-on-surface-variant) hover:text-(--color-primary)">{label}</Link>
+                </li>
               ))}
             </ul>
           </div>
