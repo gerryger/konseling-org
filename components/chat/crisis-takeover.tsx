@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { Phone, Heart, Users } from 'lucide-react'
+import { Heart, Phone, Users } from 'lucide-react'
 import { MOCK_PSIKOLOG } from '@/lib/chat/mock-data'
 import { PsikologCard } from './psikolog-card'
 
@@ -68,8 +68,8 @@ export function CrisisTakeover({ onResume }: CrisisTakeoverProps) {
 
       <div className="cs-takeover-grid" role="list" aria-label="Psikolog yang bisa dihubungi">
         {MOCK_PSIKOLOG.slice(0, 2).map((p) => (
-          <div key={p.initial} role="listitem">
-            <PsikologCard psikolog={p} variant="takeover" />
+          <div key={p.id} role="listitem">
+            <PsikologCard psikolog={p} variant="takeover" source="crisis_takeover" />
           </div>
         ))}
         <div role="listitem">
